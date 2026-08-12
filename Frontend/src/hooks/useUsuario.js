@@ -5,6 +5,7 @@ import { authService } from "../services/authService";
 const auth = new authService();
 
 export function useUsuario() {
+
     const manejoBotonLogin = (async (e) => {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
@@ -26,5 +27,13 @@ export function useUsuario() {
         //Terminar despues el flujo cuando sepamos que devuelve bff
     
     });
-    return (manejoBotonLogin);
+
+    const manejoBotonRegister=({});
+    //falta terminar cerrar sesion. Volver cuando se entienda mejor
+    const manejoBotonLogout = (async()=>{
+        const cerrarSesion=await auth.logout();
+        return cerrarSesion;
+    });
+
+    return (manejoBotonLogin,manejoBotonLogout,manejoBotonRegister);
 }

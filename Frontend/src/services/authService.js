@@ -14,6 +14,33 @@ export class authService {
     if (!response.ok) throw new Error('Credenciales inválidas');
     return response.json(); 
   }
+
+  register(){}
+
+  logout(){
+    const response = await fetch(`${getApiUrl()}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include', 
+    });
+
+    if(response.f);
+    return response.ok;
+  }
+
+  //Para saber si la sesion es valida todavia 
+  getSession() {
+  const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
+      method: 'GET',
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
     
 
 }
