@@ -5,14 +5,12 @@ export const eventoService = {
     // CRUD
 
     async getEventos() {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -23,14 +21,12 @@ export const eventoService = {
     },
 
     async getEventoById(id) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -41,14 +37,12 @@ export const eventoService = {
     },
 
     async crearEvento(dto) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
             body: JSON.stringify(dto),
         });
 
@@ -60,14 +54,12 @@ export const eventoService = {
     },
 
     async actualizarEvento(id, dto) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
             body: JSON.stringify(dto),
         });
 
@@ -75,37 +67,33 @@ export const eventoService = {
             throw new Error(`Error al actualizar el evento: ${response.status}`);
         }
 
-        return response.json();
+        // 204 No Content — el BFF no devuelve cuerpo
+        return null;
     },
 
     async eliminarEvento(id) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
+            credentials: 'include',
         });
 
         if (!response.ok) {
             throw new Error(`Error al eliminar el evento: ${response.status}`);
         }
 
-        return response.json();
+        // 204 No Content — el BFF no devuelve cuerpo
+        return null;
     },
 
     // Participantes
 
     async asignarEncargado(eventoId, usuarioId) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/encargado`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
             body: JSON.stringify({ usuarioId }),
         });
 
@@ -117,14 +105,12 @@ export const eventoService = {
     },
 
     async agregarParticipantes(eventoId, participantes) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/participantes`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
             body: JSON.stringify({ participantes }),
         });
 
@@ -132,17 +118,14 @@ export const eventoService = {
             throw new Error(`Error al agregar participantes: ${response.status}`);
         }
 
-        return response.json();
+        // 204 No Content — el BFF no devuelve cuerpo
+        return null;
     },
 
     async borrarParticipante(eventoId, usuarioId) {
-        const token = localStorage.getItem('token');
-
         const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/participantes/${usuarioId}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
+            credentials: 'include',
         });
 
         if (!response.ok) {
