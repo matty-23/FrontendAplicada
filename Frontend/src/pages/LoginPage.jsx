@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useState,useEffect } from 'react';
-import { useUsuario } from "../hooks/useUsuario" 
+import { useAuth } from "../hooks/useAuth" 
 
 function Login() {
 
-    const [manejoBotonLogin]=useUsuario();
+    const [manejoBotonLogin]=useAuth();
 
 
     return (
