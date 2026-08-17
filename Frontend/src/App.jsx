@@ -1,15 +1,18 @@
 import Login from "./pages/LoginPage.jsx";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/userContext.jsx';
 import './App.css'
 
 function App() {
-  
+
   return (
-   <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
         </Routes>
-  </BrowserRouter>
+      </BrowserRouter>
+    </UserProvider>
   )
 }
 
