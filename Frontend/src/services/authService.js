@@ -3,7 +3,7 @@ const getApiUrl = () => import.meta.env.VITE_API_URL;
 export class authService {
     constructor(){}
 
-    login(correo, contraseña) {
+    async login(correo, contraseña) {
         const response = await fetch(`${getApiUrl()}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -17,7 +17,7 @@ export class authService {
 
   register(){}
 
-  logout(){
+  async logout(){
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
       credentials: 'include', 
@@ -28,7 +28,7 @@ export class authService {
   }
 
   //Para saber si la sesion es valida todavia 
-  getSession() {
+  async getSession() {
   const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
       method: 'GET',
       credentials: "include",
