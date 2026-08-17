@@ -1,5 +1,7 @@
+import { useContext } from "./useContext"
+
 export function useUsuario(){
-    const cargarPerfil = (()=>{
-        const 
-    })
+    const {usuario}= useContext();
+
+    return{};
 }

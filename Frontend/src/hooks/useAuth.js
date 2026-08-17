@@ -15,7 +15,6 @@ export function useAuth() {
             correo: form.get("correo"),
             contraseña: form.get("contraseña")
         };
-
         //Le pasamos los datos al esquema que comprueba si cumplen con las condiciones 
         const resultado = loginSchema.safeParse(datos);
 
