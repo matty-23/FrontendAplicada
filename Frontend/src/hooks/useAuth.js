@@ -36,5 +36,5 @@ export function useAuth() {
         return cerrarSesion;
     });
 
-    return (manejoBotonLogin,manejoBotonLogout,manejoBotonRegister);
+    return {manejoBotonLogin,manejoBotonLogout,manejoBotonRegister};
 }

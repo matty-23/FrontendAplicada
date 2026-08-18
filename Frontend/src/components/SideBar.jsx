@@ -8,7 +8,15 @@ export function SideBar() {
       <div className="sidebar-bottom">
         <InfoUsuario />
       </div>
-
+    <div className="sidebar-bottom">
+        <InfoUsuario />
+      </div><div className="sidebar-bottom">
+        <InfoUsuario />
+      </div><div className="sidebar-bottom">
+        <InfoUsuario />
+      </div><div className="sidebar-bottom">
+        <InfoUsuario />
+      </div>
     </aside>
   );
 }

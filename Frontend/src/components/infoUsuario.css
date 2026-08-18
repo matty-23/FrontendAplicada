@@ -66,7 +66,7 @@
     color: white;
 }
 
-.kebab-dropdown {
+.kebabOpciones{
     position: absolute;
     bottom: 110%; /* Aparece justo encima de la tarjeta */
     right: 0;
@@ -79,7 +79,7 @@
     animation: fadeIn 0.2s ease;
 }
 
-.dropdown-item {
+.itemMenu{
     width: 100%;
     text-align: left;
     padding: 10px 15px;
@@ -94,24 +94,24 @@
     transition: background 0.2s;
 }
 
-.dropdown-item i {
+.itemMenu i {
     width: 16px;
     color: #666;
 }
 
-.dropdown-item:hover {
+.itemMenu:hover {
     background-color: #f3f4f6;
 }
 
-.dropdown-item.logout {
+.itemMenu.logout {
     color: #ef4444; /* Rojo suave */
 }
 
-.dropdown-item.logout i {
+.itemMenu.logout i {
     color: #ef4444;
 }
 
-.dropdown-divider {
+.itemMenuDivisor {
     height: 1px;
     background-color: #e5e7eb;
     margin: 4px 0;
