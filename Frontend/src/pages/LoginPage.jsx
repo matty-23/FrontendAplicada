@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth"
 
 function Login() {
 
-    const [manejoBotonLogin]=useAuth();
+    const {manejoBotonLogin,gda,ga}=useAuth();
 
 
     return (

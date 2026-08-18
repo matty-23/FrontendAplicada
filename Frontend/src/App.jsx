@@ -1,4 +1,5 @@
 import Login from "./pages/LoginPage.jsx";
+import { InfoUsuario } from "./components/InfoUsuario.jsx";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/userContext.jsx';
 import './App.css'
@@ -9,7 +10,7 @@ function App() {
     <UserProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<InfoUsuario/>} />
         </Routes>
       </BrowserRouter>
     </UserProvider>

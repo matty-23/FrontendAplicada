@@ -1,8 +1,14 @@
 import { useUsuario } from "../hooks/useUsuario"
+import "./infoUsuario";
+
 export function InfoUsuario(){
     const {usuario,imagen} = useUsuario();
     
     return(
-        <h1>{usuario.nombre}</h1>
+        <div>
+            <div className="userCard">
+                <p>{"matias"}</p>
+            </div>
+        </div>
     );
 }
