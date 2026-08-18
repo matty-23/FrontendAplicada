@@ -26,7 +26,7 @@ export function useAuth() {
 
         const respuesta = await auth.login(datos.correo, datos.contraseña);
 
-        navigate(`${"Ruta correcta"}/dashboard`);
+        navigate(`/Inicio`);
     });
 
     const manejoBotonRegister=({});

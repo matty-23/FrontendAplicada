@@ -1,3 +1,49 @@
-.userCard{
-    background-color: rgba(255, 255, 255, 0.5);
+
+.userCard {
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  padding: 11px 12px;
+  border-radius: var(--radius); 
+  background: rgba(255,255,255,0.09);
+  cursor: pointer; 
+  transition: var(--t);
+}
+
+.userCard:hover { 
+  background: rgba(255,255,255,0.1); 
+}
+
+.userImage {
+  width: 34px; 
+  height: 34px; 
+  border-radius: 50%;
+  background: var(--yellow-500); 
+  color: var(--blue-800);
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  font-size: 13px; 
+  font-weight: 800; 
+  flex-shrink: 0;
+}
+
+
+.userRol { 
+  font-size: 13px; 
+  font-weight: 600; 
+  color: white; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.userEmail { 
+  font-size: 11px; 
+  color: rgba(255,255,255,0.45); 
+  margin-top: 1px; 
+}
+.userInfo { 
+  flex: 1; 
+  min-width: 0; 
 }
