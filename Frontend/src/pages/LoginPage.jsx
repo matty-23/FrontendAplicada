@@ -9,12 +9,16 @@ export const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+<<<<<<< HEAD
+    const {manejoBotonLogin,gda,ga}=useAuth();
+=======
   // Si ya tiene sesión válida, lo mandamos directo adentro
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/admin');
     }
   }, [isAuthenticated, navigate]);
+>>>>>>> origin/fix/EventoMultidia
 
   const handleSubmit = async (e) => {
     e.preventDefault();

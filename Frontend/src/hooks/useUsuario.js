@@ -1,7 +1,7 @@
-import { useContext } from "./useContext"
+import { useContexto } from "./useContext"
 
 export function useUsuario(){
-    const {usuario}= useContext();
+    const {usuario}= useContexto();
 
     return{};
 }

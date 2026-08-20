@@ -25,7 +25,7 @@ export function useAuth() {
 
         const respuesta = await auth.login(datos.correo, datos.contraseña);
 
-        navigate(`${"Ruta correcta"}/dashboard`);
+        navigate(`/Inicio`);
     });
 
     const manejoBotonRegister=({});
@@ -35,5 +35,5 @@ export function useAuth() {
         return cerrarSesion;
     });
 
-    return (manejoBotonLogin,manejoBotonLogout,manejoBotonRegister);
+    return {manejoBotonLogin,manejoBotonLogout,manejoBotonRegister};
 }
