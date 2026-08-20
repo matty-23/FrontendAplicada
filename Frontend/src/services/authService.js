@@ -1,8 +1,10 @@
 const getApiUrl = () => import.meta.env.VITE_API_URL;
 
-export const authService = {
-  login: async (email, password) => {
-    const response = await fetch(`${getApiUrl()}/auth/login`, {
+export class authService {
+    constructor(){}
+
+    async login(correo, contraseña) {
+        const response =  await fetch(`${getApiUrl()}/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -18,30 +20,22 @@ if (!response.ok) {
     return response.json();
   },
 
-  register: async (datosUsuario) => {
-    const response = await fetch(`${getApiUrl()}/auth/registro`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(datosUsuario),
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al registrar usuario');
-    }
-
-    return response.json();
-  },
-
-  logout: async () => {
+  async logout(){
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
     });
 
-    if (!response.ok) {
-      return false;
-    }
+    if(response.f);
+    return response.ok;
+  }
+
+  //Para saber si la sesion es valida todavia 
+  async getSession() {
+  const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
+      method: 'GET',
+      credentials: "include",
+    });
 
     return response.json();
   },

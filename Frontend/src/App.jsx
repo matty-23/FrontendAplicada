@@ -15,6 +15,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from '../../context/userContext.jsx';
 import './App.css';
 import './dashboard-v2.css';
+import { SideBar } from "./components/SideBar.jsx";
+import { Dashboard } from "./pages/Dashboard.jsx";
+//import './App.css'
 
 function App() {
   return (
