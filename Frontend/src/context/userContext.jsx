@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { authService } from '../services/authService';
+
+export const UserContext = createContext();
+const auth = new authService(); // Instanciamos el servicio
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -10,12 +14,17 @@ export const UserProvider = ({ children }) => {
     }
   });
 
-  const login = (userData) => {
-    setUser(userData); 
-    localStorage.setItem('app_user', JSON.stringify(userData)); // Guarda en disco
+  const login = async (email, password) => {
+    const data = await auth.login(email, password);
+    setUser(data); 
+    localStorage.setItem('app_user', JSON.stringify(data));
+    
+    return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await auth.logout();
+    
     setUser(null); 
     localStorage.removeItem('app_user'); 
   };
@@ -30,13 +39,12 @@ export const UserProvider = ({ children }) => {
         }
       }
     };
-
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
       {children}
     </UserContext.Provider>
   );

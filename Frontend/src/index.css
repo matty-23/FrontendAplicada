@@ -5,7 +5,7 @@
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-bg: rgba(10, 13, 212, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
@@ -24,10 +24,19 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+    /* Variables para colores del sidebar(despues ver si realmente conviene que vayan aca) */
+  --sidebar-w: 260px;
+  --blue-800: #1e3a8a;
+  --blue-900: #1e293b;
+  --yellow-500: #facc15;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --t: all 0.2s ease;
 
   @media (max-width: 1024px) {
     font-size: 16px;
   }
+  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,17 +63,15 @@ body {
   margin: 0;
 }
 
+
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  width: 100%;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
+
 
 h1,
 h2 {

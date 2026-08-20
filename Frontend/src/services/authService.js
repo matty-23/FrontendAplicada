@@ -1,46 +1,46 @@
 const getApiUrl = () => import.meta.env.VITE_API_URL;
 
 export class authService {
-    constructor(){}
+  constructor() { }
 
-    login(correo, contraseña) {
-        const response = await fetch(`${getApiUrl()}/auth/login`, {
+  async login(correo, contraseña) {
+    const response = await fetch(`${getApiUrl()}/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo, contraseña }),
-      credentials: 'include', 
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) throw new Error('Credenciales inválidas');
-    return response.json(); 
+    if (!response.ok) {
+      const error = await response.text();
+      console.log('ERROR LOGIN:', response.status, error);
+      throw new Error(error);
+    }
+
+    return response.json();
   }
 
-  register(){}
-
-  logout(){
+  async logout() {
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
-      credentials: 'include', 
+      credentials: 'include',
     });
 
-    if(response.f);
+    if (response.f);
     return response.ok;
   }
 
-  //Para saber si la sesion es valida todavia 
-  getSession() {
-  const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
+  // Verifica la sesión consultando la ruta protegida /auth/perfil
+  async getSession() {
+    const response = await fetch(`${getApiUrl()}/auth/perfil`, {
       method: 'GET',
-      credentials: "include",
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      return null;
     }
-  );
 
-  if (!response.ok) {
-    return null;
+    return response.json();
   }
-
-  return response.json();
-}
-    
-
-}
+};

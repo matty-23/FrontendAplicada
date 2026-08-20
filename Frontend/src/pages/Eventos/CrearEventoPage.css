@@ -1,0 +1,91 @@
+/* ================================
+   CREAR / EDITAR EVENTO
+================================ */
+
+.crear-evento-grid {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+
+/* Acciones superiores */
+
+.crear-evento-actions {
+  display: flex;
+  gap: 10px;
+}
+
+
+/* ================================
+   COLUMNA DE OCURRENCIAS
+================================ */
+
+.crear-evento-ocurrencias {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+
+/* Botón agregar ocurrencia */
+
+.crear-evento-add-ocurrencia {
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+  border: 1.5px dashed var(--gray-300);
+}
+
+
+/* ================================
+   DETALLES DEL EVENTO
+================================ */
+
+.crear-evento-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.crear-evento-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+.crear-evento-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+
+.crear-evento-field input,
+.crear-evento-field select {
+  width: 100%;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+  .crear-evento-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .crear-evento-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .crear-evento-actions button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,82 @@
+.v2-event-item {
+  display: grid;
+
+  /*
+   * 1 → tira de color
+   * 2 → checkbox
+   * 3 → información
+   * 4 → estado
+   * 5 → acciones
+   */
+  grid-template-columns: 4px auto 1fr auto auto;
+
+  align-items: center;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Estado seleccionado */
+
+.v2-event-item.event-item-selected {
+  border-color: var(--blue-500);
+  background: var(--blue-50);
+}
+
+/* Checkbox */
+
+.event-item-checkbox {
+  padding-left: 16px;
+
+  display: flex;
+  align-items: center;
+}
+
+.event-item-checkbox input {
+  width: 16px;
+  height: 16px;
+
+  cursor: pointer;
+
+  accent-color: var(--blue-800);
+}
+
+/* Información */
+
+.v2-event-body {
+  padding-left: 12px;
+}
+
+.v2-event-name {
+  font-weight: 600;
+}
+
+.v2-event-meta {
+  display: flex;
+  gap: 16px;
+}
+
+.v2-event-meta-it {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Acciones */
+
+.v2-event-action {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Botón editar */
+
+.event-edit-button {
+  color: var(--gray-600);
+  border-color: transparent;
+}
