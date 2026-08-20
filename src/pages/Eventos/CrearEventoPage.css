@@ -1,6 +1,5 @@
-/* ================================
-   CREAR / EDITAR EVENTO
-================================ */
+
+ /*  CREAR / EDITAR EVENTO*/
 
 .crear-evento-grid {
   display: grid;
@@ -15,10 +14,7 @@
 }
 
 
-/* ================================
-   COLUMNA DE OCURRENCIAS
-================================ */
-
+/* COLUMNA DE OCURRENCIAS*/
 .crear-evento-ocurrencias {
   display: flex;
   flex-direction: column;
@@ -36,9 +32,7 @@
 }
 
 
-/* ================================
-   DETALLES DEL EVENTO
-================================ */
+/* DETALLES DEL EVENTO */
 
 .crear-evento-detalles {
   display: flex;
@@ -67,9 +61,7 @@
 }
 
 
-/* ================================
-   RESPONSIVE
-================================ */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .crear-evento-grid {
