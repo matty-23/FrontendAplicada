@@ -5,45 +5,49 @@ import Card from "../../components/Card";
 import OcurrenciaBlock from "../../components/itemsEventos/OcurrenciaBlock";
 import { useEvento } from "../../hooks/useEvento";
 
-// Función utilitaria para convertir fechas del backend al formato que necesita el input datetime-local
 const formatParaInputFecha = (fechaRaw) => {
   if (!fechaRaw) return "";
   const d = new Date(fechaRaw);
-  // Ajustamos por la zona horaria para que no se desfase la hora local
-  const tzOffset = d.getTimezoneOffset() * 60000; 
-  const localISOTime = new Date(d - tzOffset).toISOString().slice(0, 16); 
-  return localISOTime; // Retorna formato "YYYY-MM-DDTHH:mm"
+  if (isNaN(d.getTime())) return "";
+  const tzOffset = d.getTimezoneOffset() * 60000;
+  return new Date(d - tzOffset).toISOString().slice(0, 16);
 };
+
+const generarIdLocal = () => crypto.randomUUID();
 
 export default function CrearEventoPage() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Si hay ID, estamos en modo Edición
+  const { id } = useParams();
   const { crearEvento, actualizarEvento, cargarEventoById, eventoSeleccionado } = useEvento();
 
   const isEditing = Boolean(id);
 
-  // Estado base del Evento
   const [evento, setEvento] = useState({
     titulo: "",
     categoria: "Academico",
     estado: "Pendiente"
   });
 
-  // Estado para la lista dinámica de Ocurrencias
   const [ocurrencias, setOcurrencias] = useState([
-    { fechaInicio: "", fechaFinalizacion: "", lugar: "", cantidadPersonas: 0 }
+    {
+      idLocal: generarIdLocal(),
+      fechaInicio: "",
+      fechaFinalizacion: "",
+      lugar: "",
+      cantidadPersonas: 0,
+      id_encargado: "",
+      participantes: []
+    }
   ]);
 
-  // Si estamos editando, pedimos los datos al cargar la vista
   useEffect(() => {
     if (isEditing) {
       cargarEventoById(id);
     }
   }, [id]);
 
-  // Cuando los datos del backend llegan, rellenamos el formulario
   useEffect(() => {
-    if (isEditing && eventoSeleccionado) {
+    if (isEditing && eventoSeleccionado && String(eventoSeleccionado.id) === String(id)) {
       setEvento({
         titulo: eventoSeleccionado.titulo || "",
         categoria: eventoSeleccionado.categoria || "Academico",
@@ -51,22 +55,33 @@ export default function CrearEventoPage() {
       });
 
       if (eventoSeleccionado.ocurrencias && eventoSeleccionado.ocurrencias.length > 0) {
-        const ocurrenciasCargadas = eventoSeleccionado.ocurrencias.map(oc => ({
-          id: oc.id || oc.id_ocurrencia, // Guardamos el ID para que el backend sepa cuál actualizar
+        const ocurrenciasCargadas = eventoSeleccionado.ocurrencias.map((oc) => ({
+          id: oc.id || oc.id_ocurrencia,
+          idLocal: oc.id || oc.id_ocurrencia || generarIdLocal(),
           fechaInicio: formatParaInputFecha(oc.fechaInicio || oc.fecha_inicio),
           fechaFinalizacion: formatParaInputFecha(oc.fechaFinalizacion || oc.fecha_finalizacion),
           lugar: oc.lugar || "",
-          cantidadPersonas: oc.cantidadPersonas || oc.cantidad_personas || 0
+          cantidadPersonas: oc.cantidadPersonas || oc.cantidad_personas || 0,
+          id_encargado: oc.id_encargado || oc.encargado?.id || "",
+          participantes: oc.participantes || []
         }));
         setOcurrencias(ocurrenciasCargadas);
       }
     }
-  }, [eventoSeleccionado, isEditing]);
+  }, [eventoSeleccionado, isEditing, id]);
 
   const handleAgregarOcurrencia = () => {
     setOcurrencias([
       ...ocurrencias,
-      { fechaInicio: "", fechaFinalizacion: "", lugar: "", cantidadPersonas: 0 }
+      {
+        idLocal: generarIdLocal(),
+        fechaInicio: "",
+        fechaFinalizacion: "",
+        lugar: "",
+        cantidadPersonas: 0,
+        id_encargado: "",
+        participantes: []
+      }
     ]);
   };
 
@@ -82,7 +97,15 @@ export default function CrearEventoPage() {
 
   const handleGuardar = async (e) => {
     e.preventDefault();
-    const payload = { ...evento, ocurrencias };
+
+    // Formatear fechas a ISO UTC para enviar al backend
+    const ocurrenciasFormateadas = ocurrencias.map(({ idLocal, ...oc }) => ({
+      ...oc,
+      fechaInicio: oc.fechaInicio ? new Date(oc.fechaInicio).toISOString() : null,
+      fechaFinalizacion: oc.fechaFinalizacion ? new Date(oc.fechaFinalizacion).toISOString() : null
+    }));
+
+    const payload = { ...evento, ocurrencias: ocurrenciasFormateadas };
 
     try {
       if (isEditing) {
@@ -103,95 +126,107 @@ export default function CrearEventoPage() {
       title={isEditing ? "Editar Evento" : "Nuevo Evento"}
       rightActions={
         <div style={{ display: "flex", gap: "10px" }}>
-          <button className="v2-btn-secondary" onClick={() => navigate("/admin/eventos")}>
+          <button
+            type="button"
+            className="v2-btn-secondary"
+            onClick={() => navigate("/admin/eventos")}
+          >
             Cancelar
           </button>
-          <button className="v2-btn-primary" onClick={handleGuardar}>
-            <i className={isEditing ? "fa-solid fa-save" : "fa-solid fa-check"}></i> 
+          <button type="submit" form="evento-form" className="v2-btn-primary">
+            <i className={isEditing ? "fa-solid fa-save" : "fa-solid fa-check"}></i>
             {isEditing ? " Guardar Cambios" : " Guardar Evento"}
           </button>
         </div>
       }
     >
-      <div className="v2-grid-6040">
-        {/* Columna Principal: Ocurrencias */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
-          <Card title="Programación y Lugares">
-            {ocurrencias.map((oc, idx) => (
-              <OcurrenciaBlock
-                key={idx}
-                index={idx}
-                data={oc}
-                onChange={handleUpdateOcurrencia}
-                onRemove={handleRemoveOcurrencia}
-              />
-            ))}
-
-            <button
-              type="button"
-              className="v2-btn-ghost"
-              style={{ width: "100%", justifyContent: "center", marginTop: "8px", border: "1.5px dashed var(--gray-300)" }}
-              onClick={handleAgregarOcurrencia}
-            >
-              <i className="fa-solid fa-plus"></i> Añadir otra fecha/lugar
-            </button>
-          </Card>
-        </div>
-
-        {/* Columna Secundaria: Detalles del Evento */}
-        <div>
-          <Card title="Detalles Generales">
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
-                  Nombre del Evento
-                </label>
-                <input
-                  type="text"
-                  className="v2-search"
-                  style={{ width: "100%" }}
-                  placeholder="Ej: Jornada de Puertas Abiertas"
-                  value={evento.titulo}
-                  onChange={(e) => setEvento({ ...evento, titulo: e.target.value })}
+      <form id="evento-form" onSubmit={handleGuardar}>
+        <div className="v2-grid-6040">
+          {/* Columna Principal: Ocurrencias */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <Card title="Programación y Lugares">
+              {ocurrencias.map((oc, idx) => (
+                <OcurrenciaBlock
+                  key={oc.idLocal}
+                  index={idx}
+                  data={oc}
+                  canDelete={ocurrencias.length > 1}
+                  onChange={handleUpdateOcurrencia}
+                  onRemove={handleRemoveOcurrencia}
                 />
-              </div>
+              ))}
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
-                  Categoría
-                </label>
-                <select
-                  className="v2-select"
-                  style={{ width: "100%" }}
-                  value={evento.categoria}
-                  onChange={(e) => setEvento({ ...evento, categoria: e.target.value })}
-                >
-                  <option value="Academico">Académico</option>
-                  <option value="Institucional">Institucional</option>
-                  <option value="Recreativo">Recreativo</option>
-                </select>
-              </div>
+              <button
+                type="button"
+                className="v2-btn-ghost"
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  marginTop: "8px",
+                  border: "1.5px dashed var(--gray-300)"
+                }}
+                onClick={handleAgregarOcurrencia}
+              >
+                <i className="fa-solid fa-plus"></i> Añadir otra fecha/lugar
+              </button>
+            </Card>
+          </div>
 
-              {/* Agregamos el selector de Estado (solo útil para editar/crear) */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
-                  Estado
-                </label>
-                <select
-                  className="v2-select"
-                  style={{ width: "100%" }}
-                  value={evento.estado}
-                  onChange={(e) => setEvento({ ...evento, estado: e.target.value })}
-                >
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="En revisión">En revisión</option>
-                  <option value="Activo">Activo</option>
-                </select>
+          {/* Columna Secundaria: Detalles del Evento */}
+          <div>
+            <Card title="Detalles Generales">
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
+                    Nombre del Evento
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="v2-search"
+                    style={{ width: "100%" }}
+                    placeholder="Ej: Jornada de Puertas Abiertas"
+                    value={evento.titulo}
+                    onChange={(e) => setEvento({ ...evento, titulo: e.target.value })}
+                  />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
+                    Categoría
+                  </label>
+                  <select
+                    className="v2-select"
+                    style={{ width: "100%" }}
+                    value={evento.categoria}
+                    onChange={(e) => setEvento({ ...evento, categoria: e.target.value })}
+                  >
+                    <option value="Academico">Académico</option>
+                    <option value="Institucional">Institucional</option>
+                    <option value="Recreativo">Recreativo</option>
+                  </select>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--gray-700)" }}>
+                    Estado
+                  </label>
+                  <select
+                    className="v2-select"
+                    style={{ width: "100%" }}
+                    value={evento.estado}
+                    onChange={(e) => setEvento({ ...evento, estado: e.target.value })}
+                  >
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En revisión">En revisión</option>
+                    <option value="Activo">Activo</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
-      </div>
+      </form>
     </DashboardLayout>
   );
 }

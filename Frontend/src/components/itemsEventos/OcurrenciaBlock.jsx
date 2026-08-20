@@ -1,110 +1,125 @@
-export default function OcurrenciaBlock({ index, data, onChange, onRemove }) {
+import "./OcurrenciaBlock.css";
+
+export default function OcurrenciaBlock({
+  index,
+  data,
+  onChange,
+  onRemove,
+  canDelete = true
+}) {
   const handleChange = (field, value) => {
-    onChange(index, { ...data, [field]: value });
+    onChange(index, {
+      ...data,
+      [field]: value
+    });
+  };
+
+  const handleParticipantesChange = (value) => {
+    const participantes = value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    handleChange("participantes", participantes);
   };
 
   return (
-    <div style={{ 
-      border: "1px solid var(--gray-200)", 
-      borderRadius: "var(--radius)", 
-      padding: "20px", 
-      marginBottom: "16px",
-      background: "var(--gray-50)",
-      position: "relative"
-    }}>
-      
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-        <h4 style={{ margin: 0, color: "var(--blue-800)", fontSize: "14px" }}>
-          <i className="fa-regular fa-calendar-check" style={{ marginRight: "8px" }}></i>
+    <div className="ocurrencia-block">
+      {/* Header */}
+      <div className="ocurrencia-header">
+        <h4 className="ocurrencia-title">
+          <i className="fa-regular fa-calendar-check"></i>
           Ocurrencia {index + 1}
         </h4>
-        {index > 0 && (
-          <button 
+
+        {canDelete && (
+          <button
             type="button"
-            className="v2-btn-ghost" 
-            style={{ color: "var(--red-500)", padding: "4px 8px" }}
+            className="ocurrencia-delete"
             onClick={() => onRemove(index)}
+            title="Eliminar ocurrencia"
           >
             <i className="fa-solid fa-trash"></i>
           </button>
         )}
       </div>
 
+      {/* Campos */}
       <div className="v2-grid-2">
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>Inicio</label>
-          <input 
-            type="datetime-local" 
-            className="v2-search" 
-            style={{ width: "100%", background: "white" }}
-            value={data.fechaInicio}
+        {/* Fecha de inicio */}
+        <div className="ocurrencia-field">
+          <label>Inicio</label>
+          <input
+            type="datetime-local"
+            className="v2-search"
+            required
+            value={data.fechaInicio || ""}
             onChange={(e) => handleChange("fechaInicio", e.target.value)}
           />
         </div>
-        
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>Finalización</label>
-          <input 
-            type="datetime-local" 
-            className="v2-search" 
-            style={{ width: "100%", background: "white" }}
-            value={data.fechaFinalizacion}
+
+        {/* Fecha de finalización */}
+        <div className="ocurrencia-field">
+          <label>Finalización</label>
+          <input
+            type="datetime-local"
+            className="v2-search"
+            required
+            value={data.fechaFinalizacion || ""}
             onChange={(e) => handleChange("fechaFinalizacion", e.target.value)}
           />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>Lugar (Opcional)</label>
-          <input 
-            type="text" 
-            className="v2-search" 
+        {/* Lugar */}
+        <div className="ocurrencia-field">
+          <label>Lugar (Opcional)</label>
+          <input
+            type="text"
+            className="v2-search"
             placeholder="Ej: Aula Magna"
-            style={{ width: "100%", background: "white" }}
-            value={data.lugar}
+            value={data.lugar || ""}
             onChange={(e) => handleChange("lugar", e.target.value)}
           />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>Cant. Personas</label>
-          <input 
-            type="number" 
+        {/* Cantidad de personas */}
+        <div className="ocurrencia-field">
+          <label>Cant. Personas</label>
+          <input
+            type="number"
             min="0"
-            className="v2-search" 
-            style={{ width: "100%", background: "white" }}
-            value={data.cantidadPersonas}
-            onChange={(e) => handleChange("cantidadPersonas", Number(e.target.value))}
+            className="v2-search"
+            value={data.cantidadPersonas ?? 0}
+            onChange={(e) =>
+              handleChange(
+                "cantidadPersonas",
+                e.target.value === "" ? 0 : Number(e.target.value)
+              )
+            }
           />
         </div>
 
-        {/* NUEVO: Campo para Encargado */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>ID Encargado</label>
-          <input 
-            type="text" 
-            className="v2-search" 
+        {/* Encargado */}
+        <div className="ocurrencia-field">
+          <label>ID Encargado</label>
+          <input
+            type="text"
+            className="v2-search"
             placeholder="ID del responsable"
-            style={{ width: "100%", background: "white" }}
             value={data.id_encargado || ""}
             onChange={(e) => handleChange("id_encargado", e.target.value)}
           />
         </div>
 
-        {/* NUEVO: Campo para Participantes (Múltiples) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--gray-600)" }}>IDs Participantes (separados por coma)</label>
-          <input 
-            type="text" 
-            className="v2-search" 
+        {/* Participantes */}
+        <div className="ocurrencia-field">
+          <label>IDs Participantes (separados por coma)</label>
+          <input
+            type="text"
+            className="v2-search"
             placeholder="id1, id2, id3..."
-            style={{ width: "100%", background: "white" }}
-            // Convertimos el array a string para el input
-            value={(data.participantes || []).join(", ")}
-            onChange={(e) => {
-              // Convertimos el string separado por comas de vuelta a un array limpio
-              const arr = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
-              handleChange("participantes", arr);
-            }}
+            value={Array.isArray(data.participantes) ? data.participantes.join(", ") : ""}
+            onChange={(e) => handleParticipantesChange(e.target.value)}
           />
         </div>
       </div>

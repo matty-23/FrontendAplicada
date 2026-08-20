@@ -2,7 +2,7 @@ import Login from "./pages/LoginPage.jsx";
 
 // V2 Pages (Modern & Efficient)
 import AdminDashboardV2 from "./pages/AdminDashboardV2.jsx";
-import EventosPageV2 from "./pages/Eventos/EventosPageV2.jsx";
+import EventosPage from "./pages/Eventos/EventosPage.jsx";
 import SolicitudesPageV2 from "./pages/SolicitudesPageV2.jsx";
 import CalendarioPageV2 from "./pages/CalendarioPageV2.jsx";
 import BecariosPageV2 from "./pages/BecariosPageV2.jsx";
@@ -26,7 +26,7 @@ function App() {
 
           {/* Versión 2 (Nueva versión moderna por defecto) */}
           <Route path="/admin" element={<AdminDashboardV2 />} />
-          <Route path="/admin/eventos" element={<EventosPageV2 />} />
+          <Route path="/admin/eventos" element={<EventosPage/>} />
           <Route path="/admin/eventos/crear" element={<CrearEventoPage />} />
           <Route path="/admin/eventos/editar/:id" element={<CrearEventoPage />} />
            <Route path="/admin/eventos/:id" element={<EventoDetallePage />} />

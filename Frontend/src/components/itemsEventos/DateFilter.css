@@ -1,0 +1,169 @@
+.date-filter {
+  position: relative;
+  display: inline-block;
+}
+
+/* Botón que abre el calendario */
+
+.date-filter-trigger {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 12px;
+
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+
+  background: white;
+  color: var(--gray-700);
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.date-filter-trigger:hover {
+  border-color: var(--gray-300);
+}
+
+.date-filter-trigger:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 3px var(--blue-50);
+}
+
+.date-filter-trigger > i:first-child {
+  color: var(--gray-500);
+}
+
+.date-filter-trigger span {
+  white-space: nowrap;
+}
+
+/* Flecha */
+
+.date-filter-chevron {
+  margin-left: 4px;
+  font-size: 10px;
+  color: var(--gray-400);
+}
+
+/* Botón X */
+
+.date-filter-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  color: var(--gray-400);
+
+  cursor: pointer;
+}
+
+.date-filter-clear:hover {
+  background: var(--gray-100);
+  color: var(--red-500);
+}
+
+.date-filter-clear i {
+  font-size: 11px;
+}
+
+/* Calendario */
+
+.date-filter-calendar {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  right: 0;
+
+  z-index: 1000;
+
+  padding: 12px;
+
+  background: white;
+
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/*
+ * Personalización del calendario.
+ *
+ * DayPicker utiliza .rdp-root en las versiones actuales.
+ */
+
+.date-filter-calendar .rdp-root {
+  --rdp-accent-color: var(--blue-600);
+  --rdp-accent-background-color: var(--blue-50);
+  --rdp-day-width: 38px;
+  --rdp-day-height: 38px;
+
+  margin: 0;
+}
+
+/* Día que tiene eventos */
+
+.date-filter-calendar .date-filter-event-day {
+  position: relative;
+}
+
+/*
+ * Puntito debajo del número
+ * para indicar que ese día tiene eventos.
+ */
+
+.date-filter-calendar .date-filter-event-day::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 4px;
+  left: 50%;
+
+  width: 4px;
+  height: 4px;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: var(--orange-500);
+}
+
+/*
+ * Cuando el día con evento está seleccionado,
+ * mantenemos visible el indicador.
+ */
+
+.date-filter-calendar
+  .date-filter-event-day[data-selected="true"]::after {
+  background: white;
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+  .date-filter-calendar {
+    right: auto;
+    left: 0;
+  }
+
+  .date-filter-trigger {
+    max-width: 250px;
+  }
+}
