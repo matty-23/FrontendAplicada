@@ -18,7 +18,7 @@ if (!response.ok) {
 }
 
     return response.json();
-  },
+  }
 
   async logout(){
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
@@ -38,10 +38,10 @@ if (!response.ok) {
     });
 
     return response.json();
-  },
+  }
 
   // Verifica la sesión consultando la ruta protegida /auth/perfil
-  getSession: async () => {
+  async getSession() {
     const response = await fetch(`${getApiUrl()}/auth/perfil`, {
       method: 'GET',
       credentials: 'include',
@@ -52,5 +52,5 @@ if (!response.ok) {
     }
 
     return response.json();
-  },
+  }
 };

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import Card from "../../components/Card";
-import { useEvento } from "../../hooks/useEvento";
+import { useEvento } from "../../hooks/Evento/useEvento";
 
 export default function EventoDetallePage() {
   const { id } = useParams();

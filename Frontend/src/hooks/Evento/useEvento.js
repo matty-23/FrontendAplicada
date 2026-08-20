@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { eventoService } from '../services/eventoService';
+import { eventoService } from '../../services/eventoService';
 
 export const useEvento = () => {
     const [eventos, setEventos] = useState([]);
