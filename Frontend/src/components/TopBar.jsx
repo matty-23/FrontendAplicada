@@ -1,4 +1,4 @@
-export default function TopBar({ breadcrumb, title, children }) {
+export function TopBar({ breadcrumb, title, children }) {
   return (
     <header className="v2-topbar">
       <div className="v2-topbar-left">

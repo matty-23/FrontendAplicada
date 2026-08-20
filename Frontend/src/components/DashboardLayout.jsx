@@ -1,10 +1,10 @@
-import SidebarV2 from "./SidebarV2";
-import TopBar from "./TopBar";
+import {Sidebar} from "./Sidebar";
+import {TopBar} from "./TopBar";
 
 export default function DashboardLayout({ breadcrumb, title, rightActions, children }) {
   return (
     <div className="v2">
-      <SidebarV2 />
+      <Sidebar />
       
       <div className="v2-main">
         <TopBar breadcrumb={breadcrumb} title={title}>
