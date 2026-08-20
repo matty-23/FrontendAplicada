@@ -1,47 +1,37 @@
 const getApiUrl = () => import.meta.env.VITE_API_URL;
 
 export class authService {
-    constructor(){}
+  constructor() { }
 
-    async login(correo, contraseña) {
-        const response =  await fetch(`${getApiUrl()}/usuarios/login`, {
+  async login(correo, contraseña) {
+    const response = await fetch(`${getApiUrl()}/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
 
-if (!response.ok) {
-  const error = await response.text();
-  console.log('ERROR LOGIN:', response.status, error);
-  throw new Error(error);
-}
+    if (!response.ok) {
+      const error = await response.text();
+      console.log('ERROR LOGIN:', response.status, error);
+      throw new Error(error);
+    }
 
     return response.json();
-  },
+  }
 
-  async logout(){
+  async logout() {
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
     });
 
-    if(response.f);
+    if (response.f);
     return response.ok;
   }
 
-  //Para saber si la sesion es valida todavia 
-  async getSession() {
-  const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
-      method: 'GET',
-      credentials: "include",
-    });
-
-    return response.json();
-  },
-
   // Verifica la sesión consultando la ruta protegida /auth/perfil
-  getSession: async () => {
+  async getSession() {
     const response = await fetch(`${getApiUrl()}/auth/perfil`, {
       method: 'GET',
       credentials: 'include',
@@ -52,5 +42,5 @@ if (!response.ok) {
     }
 
     return response.json();
-  },
+  }
 };

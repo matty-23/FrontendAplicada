@@ -1,39 +1,47 @@
+import { useState } from 'react';
 import { loginSchema } from "../schemas/authSchema";
-import { authService } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useContexto } from "./useContext";
 //Literalmente el service
-const auth = new authService();
-
 export function useAuth() {
     const navigate = useNavigate();
+    const { login, logout } = useContexto();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const manejoBotonLogin = (async (e) => {
+    const manejoBotonLogin = async (e) => {
         e.preventDefault();
-        const form = new FormData(e.currentTarget);
+        setError(null); 
+        setIsLoading(true); 
 
+        const form = new FormData(e.currentTarget);
         const datos = {
-            correo: form.get("correo"),
+            correo: form.get("correo"), 
             contraseña: form.get("contraseña")
         };
-        //Le pasamos los datos al esquema que comprueba si cumplen con las condiciones 
+
         const resultado = loginSchema.safeParse(datos);
 
         if (!resultado.success) {
-            console.log(resultado.error.issues);
+            setError(resultado.error.issues[0].message);
+            setIsLoading(false); 
             return;
         }
 
-        const respuesta = await auth.login(datos.correo, datos.contraseña);
+        try {
+            await login(datos.correo, datos.contraseña);
+            navigate(`/Inicio`);
+        } catch (err) {
+            setError("Correo o contraseña incorrectos.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        navigate(`/Inicio`);
-    });
+    const manejoBotonLogout = async () => {
+        await logout();
+        navigate('/');
+    };
 
-    const manejoBotonRegister=({});
-    //falta terminar cerrar sesion. Volver cuando se entienda mejor
-    const manejoBotonLogout = (async()=>{
-        const cerrarSesion=await auth.logout();
-        return cerrarSesion;
-    });
-
-    return {manejoBotonLogin,manejoBotonLogout,manejoBotonRegister};
+    return { manejoBotonLogin, manejoBotonLogout, isLoading, error };
 }
