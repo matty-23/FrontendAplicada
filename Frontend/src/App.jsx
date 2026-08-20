@@ -6,7 +6,6 @@ import { UserProvider } from './context/userContext.jsx';
 //import './App.css'
 
 function App() {
-
   return (
     <UserProvider>
       <BrowserRouter>
@@ -16,7 +15,8 @@ function App() {
         </Routes>
       </BrowserRouter>
     </UserProvider>
-  )
+  );
 }
 
-export default App
+export default App;
+

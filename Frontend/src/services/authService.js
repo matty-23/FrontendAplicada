@@ -7,20 +7,23 @@ export class authService {
         const response =  await fetch(`${getApiUrl()}/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo, contraseña }),
-      credentials: 'include', 
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) throw new Error('Credenciales inválidas');
-    return response.json(); 
-  }
+if (!response.ok) {
+  const error = await response.text();
+  console.log('ERROR LOGIN:', response.status, error);
+  throw new Error(error);
+}
 
-  register(){}
+    return response.json();
+  },
 
   async logout(){
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
-      credentials: 'include', 
+      credentials: 'include',
     });
 
     if(response.f);
@@ -32,15 +35,22 @@ export class authService {
   const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
       method: 'GET',
       credentials: "include",
+    });
+
+    return response.json();
+  },
+
+  // Verifica la sesión consultando la ruta protegida /auth/perfil
+  getSession: async () => {
+    const response = await fetch(`${getApiUrl()}/auth/perfil`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      return null;
     }
-  );
 
-  if (!response.ok) {
-    return null;
-  }
-
-  return response.json();
-}
-    
-
-}
+    return response.json();
+  },
+};
