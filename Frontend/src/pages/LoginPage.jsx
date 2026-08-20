@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useContexto } from '../hooks/useContext';
 
 export const LoginPage = () => {
-  const { manejoBotonLogin, isLoading, error } = useAuth();
+  const { manejoBotonLogin, manejoBotonLogout, isLoading, error } = useAuth();
   const { user } = useContexto(); 
   const navigate = useNavigate();
 
