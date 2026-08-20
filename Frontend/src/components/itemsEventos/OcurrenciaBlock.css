@@ -1,0 +1,51 @@
+.ocurrencia-block {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  background: var(--gray-50);
+  position: relative;
+}
+
+.ocurrencia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ocurrencia-title {
+  margin: 0;
+  color: var(--blue-800);
+  font-size: 14px;
+}
+
+.ocurrencia-title i {
+  margin-right: 8px;
+}
+
+.ocurrencia-delete {
+  color: var(--red-500);
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.ocurrencia-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ocurrencia-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.ocurrencia-field .v2-search {
+  width: 100%;
+  background: white;
+  box-sizing: border-box;
+}
