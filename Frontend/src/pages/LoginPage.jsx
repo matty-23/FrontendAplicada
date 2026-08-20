@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useContexto } from '../hooks/useContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const LoginPage = () => {
   const { manejoBotonLogin, manejoBotonLogout, isLoading, error } = useAuth();
