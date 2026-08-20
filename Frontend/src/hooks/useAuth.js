@@ -1,6 +1,6 @@
 import { loginSchema } from "../schemas/authSchema";
 import { authService } from "../services/authService";
-
+import { useNavigate } from "react-router-dom";
 //Literalmente el service
 const auth = new authService();
 

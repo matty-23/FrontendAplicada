@@ -103,35 +103,23 @@ export const eventoService = {
 
         return response.json();
     },
-
-    async agregarParticipantes(eventoId, participantes) {
-        const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/participantes`, {
+    async agregarParticipantes(idOcurrencia, participantes) {
+        const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({ participantes }),
         });
-
-        if (!response.ok) {
-            throw new Error(`Error al agregar participantes: ${response.status}`);
-        }
-
-        // 204 No Content — el BFF no devuelve cuerpo
+        if (!response.ok) throw new Error(`Error al agregar participantes: ${response.status}`);
         return null;
     },
 
-    async borrarParticipante(eventoId, usuarioId) {
-        const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/participantes/${usuarioId}`, {
+    async borrarParticipante(idOcurrencia, usuarioId) {
+        const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes/${usuarioId}`, {
             method: 'DELETE',
             credentials: 'include',
         });
-
-        if (!response.ok) {
-            throw new Error(`Error al borrar participante: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Error al borrar participante: ${response.status}`);
         return response.json();
-    },
+    }
 };

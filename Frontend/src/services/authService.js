@@ -1,46 +1,62 @@
 const getApiUrl = () => import.meta.env.VITE_API_URL;
 
-export class authService {
-    constructor(){}
-
-    async login(correo, contraseña) {
-        const response = await fetch(`${getApiUrl()}/auth/login`, {
+export const authService = {
+  login: async (email, password) => {
+    const response = await fetch(`${getApiUrl()}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo, contraseña }),
-      credentials: 'include', 
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) throw new Error('Credenciales inválidas');
-    return response.json(); 
-  }
+if (!response.ok) {
+  const error = await response.text();
+  console.log('ERROR LOGIN:', response.status, error);
+  throw new Error(error);
+}
 
-  register(){}
+    return response.json();
+  },
 
-  async logout(){
+  register: async (datosUsuario) => {
+    const response = await fetch(`${getApiUrl()}/auth/registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(datosUsuario),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al registrar usuario');
+    }
+
+    return response.json();
+  },
+
+  logout: async () => {
     const response = await fetch(`${getApiUrl()}/auth/logout`, {
       method: 'POST',
-      credentials: 'include', 
+      credentials: 'include',
     });
 
-    if(response.f);
-    return response.ok;
-  }
-
-  //Para saber si la sesion es valida todavia 
-  async getSession() {
-  const response = await fetch(`${getApiUrl()}/api/auth/get-session`,{
-      method: 'GET',
-      credentials: "include",
+    if (!response.ok) {
+      return false;
     }
-  );
 
-  if (!response.ok) {
-    return null;
-  }
+    return response.json();
+  },
 
-  return response.json();
-}
-    
+  // Verifica la sesión consultando la ruta protegida /auth/perfil
+  getSession: async () => {
+    const response = await fetch(`${getApiUrl()}/auth/perfil`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-}
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  },
+};
