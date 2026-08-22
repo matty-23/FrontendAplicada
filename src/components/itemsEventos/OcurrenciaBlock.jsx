@@ -1,26 +1,47 @@
-import "./OcurrenciaBlock.css";
+import { useMemo } from 'react';
+import EncargadoSelector from './EncargadoSelector';
+import ParticipantesSelector from './ParticipanteSelector';
+import './OcurrenciaBlock.css';
 
 export default function OcurrenciaBlock({
   index,
   data,
   onChange,
   onRemove,
-  canDelete = true
+  canDelete = true,
+  usuariosDisponibles = [],
 }) {
+  // ✅ CORREGIDO: Usar useMemo en lugar de useState + useEffect
+  // Evita loop infinito por cambios de referencia
+  const encargadoSeleccionado = useMemo(() => {
+    if (!data.id_encargado || usuariosDisponibles.length === 0) {
+      return null;
+    }
+
+    return (
+      usuariosDisponibles.find(
+        (u) => u.id === data.id_encargado
+      ) || null
+    );
+  }, [data.id_encargado, usuariosDisponibles]);
+
+  const participantesSeleccionados = useMemo(() => {
+    if (!data.participantes || usuariosDisponibles.length === 0) {
+      return [];
+    }
+
+    return data.participantes
+      .map((id) =>
+        usuariosDisponibles.find((u) => u.id === id)
+      )
+      .filter(Boolean);
+  }, [data.participantes, usuariosDisponibles]);
+
   const handleChange = (field, value) => {
     onChange(index, {
       ...data,
-      [field]: value
+      [field]: value,
     });
-  };
-
-  const handleParticipantesChange = (value) => {
-    const participantes = value
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    handleChange("participantes", participantes);
   };
 
   return (
@@ -44,7 +65,7 @@ export default function OcurrenciaBlock({
         )}
       </div>
 
-      {/* Campos */}
+      {/* Campos de fecha y lugar */}
       <div className="v2-grid-2">
         {/* Fecha de inicio */}
         <div className="ocurrencia-field">
@@ -53,8 +74,10 @@ export default function OcurrenciaBlock({
             type="datetime-local"
             className="v2-search"
             required
-            value={data.fechaInicio || ""}
-            onChange={(e) => handleChange("fechaInicio", e.target.value)}
+            value={data.fechaInicio || ''}
+            onChange={(e) =>
+              handleChange('fechaInicio', e.target.value)
+            }
           />
         </div>
 
@@ -65,8 +88,10 @@ export default function OcurrenciaBlock({
             type="datetime-local"
             className="v2-search"
             required
-            value={data.fechaFinalizacion || ""}
-            onChange={(e) => handleChange("fechaFinalizacion", e.target.value)}
+            value={data.fechaFinalizacion || ''}
+            onChange={(e) =>
+              handleChange('fechaFinalizacion', e.target.value)
+            }
           />
         </div>
 
@@ -77,8 +102,8 @@ export default function OcurrenciaBlock({
             type="text"
             className="v2-search"
             placeholder="Ej: Aula Magna"
-            value={data.lugar || ""}
-            onChange={(e) => handleChange("lugar", e.target.value)}
+            value={data.lugar || ''}
+            onChange={(e) => handleChange('lugar', e.target.value)}
           />
         </div>
 
@@ -92,36 +117,38 @@ export default function OcurrenciaBlock({
             value={data.cantidadPersonas ?? 0}
             onChange={(e) =>
               handleChange(
-                "cantidadPersonas",
-                e.target.value === "" ? 0 : Number(e.target.value)
+                'cantidadPersonas',
+                e.target.value === '' ? 0 : Number(e.target.value)
               )
             }
           />
         </div>
+      </div>
 
-        {/* Encargado */}
-        <div className="ocurrencia-field">
-          <label>ID Encargado</label>
-          <input
-            type="text"
-            className="v2-search"
-            placeholder="ID del responsable"
-            value={data.id_encargado || ""}
-            onChange={(e) => handleChange("id_encargado", e.target.value)}
-          />
-        </div>
+      {/* Selector de Encargado */}
+      <div className="ocurrencia-field ocurrencia-field-full">
+        <label>
+          <i className="fa-solid fa-user-tie"></i>
+          Encargado
+        </label>
+        <EncargadoSelector
+          value={data.id_encargado || ''}
+          onChange={(id) => handleChange('id_encargado', id)}
+          usuarioSeleccionado={encargadoSeleccionado}
+        />
+      </div>
 
-        {/* Participantes */}
-        <div className="ocurrencia-field">
-          <label>IDs Participantes (separados por coma)</label>
-          <input
-            type="text"
-            className="v2-search"
-            placeholder="id1, id2, id3..."
-            value={Array.isArray(data.participantes) ? data.participantes.join(", ") : ""}
-            onChange={(e) => handleParticipantesChange(e.target.value)}
-          />
-        </div>
+      {/* Selector de Participantes */}
+      <div className="ocurrencia-field ocurrencia-field-full">
+        <label>
+          <i className="fa-solid fa-users"></i>
+          Participantes
+        </label>
+        <ParticipantesSelector
+          value={data.participantes || []}
+          onChange={(ids) => handleChange('participantes', ids)}
+          usuariosSeleccionados={participantesSeleccionados}
+        />
       </div>
     </div>
   );

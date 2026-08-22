@@ -16,9 +16,7 @@ export function useEventoForm(id) {
 
   const isEditing = Boolean(id);
 
-  // =========================
   // EVENTO
-  // =========================
 
   const [evento, setEvento] = useState({
     titulo: "",
@@ -27,9 +25,7 @@ export function useEventoForm(id) {
   });
 
 
-  // =========================
   // OCURRENCIAS
-  // =========================
 
   const [ocurrencias, setOcurrencias] = useState([
     {
@@ -44,9 +40,7 @@ export function useEventoForm(id) {
   ]);
 
 
-  // =========================
   // CARGAR EVENTO
-  // =========================
 
   useEffect(() => {
 
@@ -57,9 +51,7 @@ export function useEventoForm(id) {
   }, [id, isEditing]);
 
 
-  // =========================
   // CARGAR DATOS EN FORMULARIO
-  // =========================
 
   useEffect(() => {
 
@@ -131,9 +123,7 @@ export function useEventoForm(id) {
   ]);
 
 
-  // =========================
   // ACTUALIZAR EVENTO
-  // =========================
 
   const actualizarCampoEvento = (campo, valor) => {
 
@@ -145,9 +135,7 @@ export function useEventoForm(id) {
   };
 
 
-  // =========================
   // AGREGAR OCURRENCIA
-  // =========================
 
   const agregarOcurrencia = () => {
 
@@ -167,9 +155,7 @@ export function useEventoForm(id) {
   };
 
 
-  // =========================
   // ACTUALIZAR OCURRENCIA
-  // =========================
 
   const actualizarOcurrencia = (index, newData) => {
 
@@ -185,9 +171,7 @@ export function useEventoForm(id) {
   };
 
 
-  // =========================
   // ELIMINAR OCURRENCIA
-  // =========================
 
   const eliminarOcurrencia = (index) => {
 
@@ -198,10 +182,7 @@ export function useEventoForm(id) {
   };
 
 
-  // =========================
   // GUARDAR
-  // =========================
-
   const guardarEvento = async () => {
 
     const ocurrenciasFormateadas =

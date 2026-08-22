@@ -1,36 +1,63 @@
 const getApiUrl = () => import.meta.env.VITE_API_URL;
 
 export class authService {
-  constructor() { }
-
   async login(correo, contraseña) {
-    const response = await fetch(`${getApiUrl()}/usuarios/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const url = `${getApiUrl()}/auth/login`;
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.log('ERROR LOGIN:', response.status, error);
-      throw new Error(error);
+      console.log('LOGIN URL:', url);
+      console.log('LOGIN DATA:', {
+        correo,
+        contraseña,
+      });
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: correo,
+          password: contraseña,
+        }),
+      });
+
+      console.log('LOGIN STATUS:', response.status);
+
+      const data = await response.json();
+
+      console.log('LOGIN RESPONSE:', data);
+
+      if (!response.ok) {
+        throw new Error(data?.message || 'Error al iniciar sesión');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('ERROR LOGIN:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   async logout() {
-    const response = await fetch(`${getApiUrl()}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(`${getApiUrl()}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
 
-    if (response.f);
-    return response.ok;
+      if (!response.ok) {
+        throw new Error('Error al cerrar sesión');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('ERROR LOGOUT:', error);
+      throw error;
+    }
   }
 
-  // Verifica la sesión consultando la ruta protegida /auth/perfil
   async getSession() {
     const response = await fetch(`${getApiUrl()}/auth/perfil`, {
       method: 'GET',

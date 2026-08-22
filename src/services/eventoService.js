@@ -87,22 +87,40 @@ export const eventoService = {
 
     // Participantes
 
-    async asignarEncargado(eventoId, usuarioId) {
-        const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/encargado`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ usuarioId }),
-        });
+async asignarEncargado(eventoId, ocurrenciaId, usuarioId) {
+    console.log('ASIGNANDO ENCARGADO:', {
+        eventoId,
+        ocurrenciaId,
+        usuarioId
+    });
 
-        if (!response.ok) {
-            throw new Error(`Error al asignar encargado: ${response.status}`);
-        }
+    const url =
+        `${BFF_URL}/api/eventos/${eventoId}/ocurrencias/${ocurrenciaId}/encargado`;
 
-        return response.json();
-    },
+    console.log('URL:', url);
+
+    const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ usuarioId }),
+    });
+
+    console.log('STATUS:', response.status);
+
+    const texto = await response.text();
+    console.log('RESPUESTA:', texto);
+
+    if (!response.ok) {
+        throw new Error(
+            `Error al asignar encargado: ${response.status} - ${texto}`
+        );
+    }
+
+    return texto ? JSON.parse(texto) : null;
+},
     async agregarParticipantes(idOcurrencia, participantes) {
         const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes`, {
             method: 'PATCH',
