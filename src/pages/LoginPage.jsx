@@ -10,7 +10,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/Inicio'); 
+      navigate('/admin'); 
     }
   }, [user, navigate]);
 
@@ -38,8 +38,10 @@ export const LoginPage = () => {
           />
         </div>
 
-        <button type="submit" disabled={isLoading}>
-        </button>
+<button type="submit" disabled={isLoading} className="login-button">
+  {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+</button>
+
       </form>
     </div>
   );

@@ -45,7 +45,6 @@ export const eventoService = {
             credentials: 'include',
             body: JSON.stringify(dto),
         });
-
         if (!response.ok) {
             throw new Error(`Error al crear el evento: ${response.status}`);
         }
@@ -87,8 +86,19 @@ export const eventoService = {
 
     // Participantes
 
-    async asignarEncargado(eventoId, usuarioId) {
-        const response = await fetch(`${BFF_URL}/api/eventos/${eventoId}/encargado`, {
+    async asignarEncargado(eventoId, ocurrenciaId, usuarioId) {
+        console.log('ASIGNANDO ENCARGADO:', {
+            eventoId,
+            ocurrenciaId,
+            usuarioId
+        });
+
+        const url =
+            `${BFF_URL}/api/eventos/${eventoId}/ocurrencias/${ocurrenciaId}/encargado`;
+
+        console.log('URL:', url);
+
+        const response = await fetch(url, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -97,11 +107,18 @@ export const eventoService = {
             body: JSON.stringify({ usuarioId }),
         });
 
+        console.log('STATUS:', response.status);
+
+        const texto = await response.text();
+        console.log('RESPUESTA:', texto);
+
         if (!response.ok) {
-            throw new Error(`Error al asignar encargado: ${response.status}`);
+            throw new Error(
+                `Error al asignar encargado: ${response.status} - ${texto}`
+            );
         }
 
-        return response.json();
+        return texto ? JSON.parse(texto) : null;
     },
     async agregarParticipantes(idOcurrencia, participantes) {
         const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes`, {
@@ -113,7 +130,6 @@ export const eventoService = {
         if (!response.ok) throw new Error(`Error al agregar participantes: ${response.status}`);
         return null;
     },
-
     async borrarParticipante(idOcurrencia, usuarioId) {
         const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes/${usuarioId}`, {
             method: 'DELETE',

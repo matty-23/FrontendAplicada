@@ -1,0 +1,256 @@
+.participantes-selector {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Input y wrapper */
+.participantes-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.participantes-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.participantes-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #0066cc);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.participantes-spinner {
+  position: absolute;
+  right: 12px;
+  color: var(--color-primary, #0066cc);
+  font-size: 14px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dropdown */
+.participantes-dropdown {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.participantes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.participantes-item {
+  border-bottom: 1px solid var(--color-border, #eee);
+}
+
+.participantes-item:last-child {
+  border-bottom: none;
+}
+
+.participantes-item-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.participantes-item-btn:hover {
+  background-color: var(--color-bg-hover, #f5f5f5);
+}
+
+.participantes-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.participantes-nombre {
+  font-weight: 500;
+  color: var(--color-text-primary, #000);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.participantes-email {
+  font-size: 12px;
+  color: var(--color-text-secondary, #666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.participantes-rol {
+  font-size: 12px;
+  background: var(--color-bg-secondary, #f0f0f0);
+  color: var(--color-text-secondary, #666);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.participantes-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--color-text-secondary, #666);
+  font-size: 14px;
+}
+
+/* Participantes seleccionados */
+.participantes-selected {
+  border-top: 1px solid var(--color-border, #ddd);
+  padding-top: 12px;
+}
+
+.participantes-selected-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.participantes-selected-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Badges de participantes */
+.participantes-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.participante-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px 8px 12px;
+
+  background: var(--color-primary-light, #e3f2fd);
+  border: 1px solid var(--color-primary, #0066cc);
+  border-radius: 20px;
+
+  font-size: 13px;
+}
+
+.participante-badge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.participante-badge-nombre {
+  font-weight: 500;
+  color: var(--color-text-primary, #000);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.participante-badge-rol {
+  font-size: 11px;
+  color: var(--color-primary, #0066cc);
+}
+
+.participante-badge-remove {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin-left: 4px;
+
+  border: none;
+  background: transparent;
+
+  color: #0066cc;
+
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+.participante-badge-remove:hover {
+  background: #dbeafe;
+  color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .participantes-dropdown {
+    max-height: 250px;
+  }
+
+  .participantes-item-btn {
+    padding: 10px 12px;
+  }
+
+  .participantes-item-info {
+    gap: 2px;
+  }
+
+  .participantes-nombre {
+    font-size: 14px;
+  }
+
+  .participantes-email {
+    font-size: 11px;
+  }
+
+  .participante-badge {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .participante-badge-nombre {
+    font-size: 12px;
+  }
+}

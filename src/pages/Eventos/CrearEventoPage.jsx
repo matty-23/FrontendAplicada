@@ -98,17 +98,26 @@ export default function CrearEventoPage() {
             lugar: oc.lugar || "",
 
             cantidadPersonas:
-              oc.cantidadPersonas ||
-              oc.cantidad_personas ||
+              oc.cantidadPersonas ??
+              oc.cantidad_personas ??
               0,
 
             id_encargado:
-              oc.id_encargado ||
-              oc.encargado?.id ||
-              "",
+              typeof oc.id_encargado === "string"
+                ? oc.id_encargado
+                : oc.encargado?.id || "",
 
             participantes:
-              oc.participantes || []
+              (oc.participantes || [])
+                .map((p) =>
+                  typeof p === "string"
+                    ? p
+                    : p?.id
+                )
+                .filter(Boolean),
+
+            participantesSeleccionados:
+              oc.participantes || [],
           }));
 
         setOcurrencias(ocurrenciasCargadas);
@@ -158,8 +167,8 @@ export default function CrearEventoPage() {
 
         fechaFinalizacion: oc.fechaFinalizacion
           ? new Date(
-              oc.fechaFinalizacion
-            ).toISOString()
+            oc.fechaFinalizacion
+          ).toISOString()
           : null
       })
     );
@@ -238,7 +247,7 @@ export default function CrearEventoPage() {
         onSubmit={handleGuardar}
       >
         <div className="crear-evento-grid">
-          
+
           {/* Ocurrencias */}
           <div className="crear-evento-ocurrencias">
             <Card title="Programación y Lugares">

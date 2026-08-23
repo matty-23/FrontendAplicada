@@ -42,20 +42,22 @@ export const useEvento = () => {
             const nuevo = await eventoService.crearEvento(dto);
             setEventos(prev => [...prev, nuevo]);
             return nuevo;
-        } catch (err) {
-            setError(err.message);
-        }
+    } catch (err) {
+        setError(err.message);
+        throw err; 
+    }
     };
 
-    const actualizarEvento = async (id, dto) => {
-        setError(null);
-        try {
-            await eventoService.actualizarEvento(id, dto);
-            setEventos(prev => prev.map(e => e.id === id ? { ...e, ...dto } : e));
-        } catch (err) {
-            setError(err.message);
-        }
-    };
+const actualizarEvento = async (id, dto) => {
+    setError(null);
+    try {
+        await eventoService.actualizarEvento(id, dto);
+        setEventos(prev =>prev.map(e =>e.id === id? { ...e, ...dto }: e));
+    } catch (err) {
+        setError(err.message);
+        throw err; 
+    }
+};
 
     const eliminarEvento = async (id) => {
         setError(null);

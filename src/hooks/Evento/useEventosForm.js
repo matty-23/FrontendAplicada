@@ -16,9 +16,7 @@ export function useEventoForm(id) {
 
   const isEditing = Boolean(id);
 
-  // =========================
   // EVENTO
-  // =========================
 
   const [evento, setEvento] = useState({
     titulo: "",
@@ -27,10 +25,7 @@ export function useEventoForm(id) {
   });
 
 
-  // =========================
   // OCURRENCIAS
-  // =========================
-
   const [ocurrencias, setOcurrencias] = useState([
     {
       idLocal: generarIdLocal(),
@@ -44,113 +39,75 @@ export function useEventoForm(id) {
   ]);
 
 
-  // =========================
   // CARGAR EVENTO
-  // =========================
-
   useEffect(() => {
-
     if (isEditing) {
       cargarEventoById(id);
     }
-
   }, [id, isEditing]);
 
-
-  // =========================
   // CARGAR DATOS EN FORMULARIO
-  // =========================
-
   useEffect(() => {
-
-    if (
-      !isEditing ||
-      !eventoSeleccionado ||
-      String(eventoSeleccionado.id) !== String(id)
-    ) {
+    if (!isEditing || !eventoSeleccionado || String(eventoSeleccionado.id) !== String(id) ) {
       return;
     }
 
     setEvento({
       titulo: eventoSeleccionado.titulo || "",
-      categoria:
-        eventoSeleccionado.categoria || "Academico",
-      estado:
-        eventoSeleccionado.estado || "Pendiente",
+      categoria: eventoSeleccionado.categoria || "Academico",
+      estado: eventoSeleccionado.estado || "Pendiente",
     });
 
 
-    if (
-      eventoSeleccionado.ocurrencias &&
-      eventoSeleccionado.ocurrencias.length > 0
-    ) {
+    if (eventoSeleccionado.ocurrencias && eventoSeleccionado.ocurrencias.length > 0) {
+      const ocurrenciasCargadas = eventoSeleccionado.ocurrencias.map((oc) => {
+          const encargado = oc.encargado || null;
+          const participantes =  Array.isArray(oc.participantes)? oc.participantes:[];
+          return {
+            // ID real de la ocurrencia
+            id: oc.id ||oc.id_ocurrencia,
 
-      const ocurrenciasCargadas =
-        eventoSeleccionado.ocurrencias.map((oc) => ({
-          id: oc.id || oc.id_ocurrencia,
+            // ID para React
+            idLocal: oc.id ||oc.id_ocurrencia ||   generarIdLocal(),
 
-          idLocal:
-            oc.id ||
-            oc.id_ocurrencia ||
-            generarIdLocal(),
+            // FECHAS
+            fechaInicio: formatParaInputFecha(   oc.fechaInicio ||  oc.fecha_inicio ),
+            fechaFinalizacion: formatParaInputFecha(oc.fechaFinalizacion ||oc.fecha_finalizacion),
 
-          fechaInicio: formatParaInputFecha(
-            oc.fechaInicio ||
-            oc.fecha_inicio
-          ),
+            // DATOS
+            lugar: oc.lugar || "",
+            cantidadPersonas: oc.cantidadPersonas ?? oc.cantidad_personas ?? 0,
 
-          fechaFinalizacion:
-            formatParaInputFecha(
-              oc.fechaFinalizacion ||
-              oc.fecha_finalizacion
-            ),
+            // ENCARGADO
+            id_encargado: oc.id_encargado ||  encargado?.id ||  encargado?.id_usuario || encargado?.usuarioId ||  "",
+            encargadoSeleccionado:  encargado,
 
-          lugar: oc.lugar || "",
+            // PARTICIPANTES
+            participantes: participantes.map((p) => {
+                  if (typeof p === "string") {
+                    return p;
+                  }
+                  return ( p.id ||p.id_usuario || p.usuarioId);
+                }).filter(Boolean),
 
-          cantidadPersonas:
-            oc.cantidadPersonas ||
-            oc.cantidad_personas ||
-            0,
-
-          id_encargado:
-            oc.id_encargado ||
-            oc.encargado?.id ||
-            "",
-
-          participantes:
-            oc.participantes || [],
-        }));
+            participantesSeleccionados: participantes,
+          };
+        });
 
       setOcurrencias(ocurrenciasCargadas);
     }
 
-  }, [
-    eventoSeleccionado,
-    isEditing,
-    id,
-  ]);
+  }, [eventoSeleccionado, isEditing,id,]);
 
-
-  // =========================
   // ACTUALIZAR EVENTO
-  // =========================
-
   const actualizarCampoEvento = (campo, valor) => {
-
     setEvento((prev) => ({
-      ...prev,
-      [campo]: valor,
-    }));
-
+      ...prev, [campo]: valor, }));
   };
 
 
-  // =========================
   // AGREGAR OCURRENCIA
-  // =========================
-
   const agregarOcurrencia = () => {
-
     setOcurrencias((prev) => [
       ...prev,
       {
@@ -167,98 +124,57 @@ export function useEventoForm(id) {
   };
 
 
-  // =========================
   // ACTUALIZAR OCURRENCIA
-  // =========================
 
   const actualizarOcurrencia = (index, newData) => {
-
     setOcurrencias((prev) => {
-
       const updated = [...prev];
-
       updated[index] = newData;
-
       return updated;
     });
 
   };
 
-
-  // =========================
   // ELIMINAR OCURRENCIA
-  // =========================
-
   const eliminarOcurrencia = (index) => {
-
-    setOcurrencias((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
-
+    setOcurrencias((prev) => prev.filter((_, i) => i !== index) );
   };
 
 
-  // =========================
   // GUARDAR
-  // =========================
-
   const guardarEvento = async () => {
-
     const ocurrenciasFormateadas =
-      ocurrencias.map(
-        ({ idLocal, ...oc }) => ({
+      ocurrencias.map( ({ idLocal, ...oc }) => ({
           ...oc,
-
-          fechaInicio: oc.fechaInicio
-            ? new Date(
-                oc.fechaInicio
-              ).toISOString()
-            : null,
-
+          fechaInicio: oc.fechaInicio ? new Date(oc.fechaInicio).toISOString() : null,
           fechaFinalizacion:
-            oc.fechaFinalizacion
-              ? new Date(
-                  oc.fechaFinalizacion
-                ).toISOString()
-              : null,
+            oc.fechaFinalizacion? new Date( oc.fechaFinalizacion).toISOString():null,
         })
       );
 
 
     const payload = {
       ...evento,
-      ocurrencias:
-        ocurrenciasFormateadas,
+      ocurrencias: ocurrenciasFormateadas,
     };
 
 
     if (isEditing) {
-
-      await actualizarEvento(
-        id,
-        payload
-      );
-
+      await actualizarEvento(id, payload);
     } else {
-
       await crearEvento(payload);
-
     }
 
   };
-
 
   return {
     evento,
     ocurrencias,
     isEditing,
-
     actualizarCampoEvento,
-
     agregarOcurrencia,
     actualizarOcurrencia,
     eliminarOcurrencia,
-
     guardarEvento,
   };
 }

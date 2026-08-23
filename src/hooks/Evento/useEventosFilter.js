@@ -62,28 +62,43 @@ export function useEventosFilter(eventos) {
         }
       }
 
-  // FECHA
+      // FECHA
       let matchDate = true;
 
       if (dateRange?.from) {
-
         matchDate = e.ocurrencias?.some((oc) => {
 
           if (!oc.fechaInicio) {
             return false;
           }
 
-          const fechaOcurrencia =
-            new Date(oc.fechaInicio);
+          const fechaInicio = new Date(oc.fechaInicio);
 
-          if (isNaN(fechaOcurrencia.getTime())) {
+          if (isNaN(fechaInicio.getTime())) {
             return false;
           }
 
-          const fecha = new Date(
-            fechaOcurrencia.getFullYear(),
-            fechaOcurrencia.getMonth(),
-            fechaOcurrencia.getDate()
+          // Si no tiene fecha de finalización,
+          // consideramos solamente su fecha de inicio.
+          const fechaFin = oc.fechaFinalizacion
+            ? new Date(oc.fechaFinalizacion)
+            : fechaInicio;
+
+          if (isNaN(fechaFin.getTime())) {
+            return false;
+          }
+
+          // Normalizamos las fechas para comparar solamente día/mes/año
+          const inicioOcurrencia = new Date(
+            fechaInicio.getFullYear(),
+            fechaInicio.getMonth(),
+            fechaInicio.getDate()
+          );
+
+          const finOcurrencia = new Date(
+            fechaFin.getFullYear(),
+            fechaFin.getMonth(),
+            fechaFin.getDate()
           );
 
           const desde = new Date(
@@ -94,16 +109,19 @@ export function useEventosFilter(eventos) {
 
           const hasta = dateRange.to
             ? new Date(
-                dateRange.to.getFullYear(),
-                dateRange.to.getMonth(),
-                dateRange.to.getDate()
-              )
+              dateRange.to.getFullYear(),
+              dateRange.to.getMonth(),
+              dateRange.to.getDate()
+            )
             : desde;
 
-          return fecha >= desde && fecha <= hasta;
+          // Hay coincidencia si los intervalos se superponen
+          return (
+            inicioOcurrencia <= hasta &&
+            finOcurrencia >= desde
+          );
         });
       }
-
       return (
         matchTab &&
         matchSearch &&
