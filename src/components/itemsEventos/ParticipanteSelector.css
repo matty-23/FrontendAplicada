@@ -1,4 +1,5 @@
 .participantes-selector {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -44,7 +45,7 @@
 /* Dropdown */
 .participantes-dropdown {
   position: absolute;
-  top: 100%;
+  top: 48px;
   left: 0;
   right: 0;
   margin-top: 4px;
@@ -52,7 +53,7 @@
   border: 1px solid var(--color-border, #ddd);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: 9999;
   max-height: 300px;
   overflow-y: auto;
 }

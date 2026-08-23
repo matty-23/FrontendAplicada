@@ -13,19 +13,23 @@ export const useUsuarioSearch = () => {
   const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
-  const [query, setQuery] = useState('');
 
-  // Cargar todos los usuarios al montar
   useEffect(() => {
     const cargarUsuarios = async () => {
       setCargando(true);
       setError(null);
+
       try {
-        const datos = await usuarioService.obtenerUsuarios();
-        // Filtrar solo usuarios con roles permitidos
-        const usuariosValidos = (datos || []).filter((u) =>
+        const respuesta = await usuarioService.obtenerUsuarios();
+
+        const datos = Array.isArray(respuesta)
+          ? respuesta
+          : respuesta.data ?? respuesta.usuarios ?? [];
+
+        const usuariosValidos = datos.filter((u) =>
           ROLES_PERMITIDOS.includes(u.rol)
         );
+
         setUsuarios(usuariosValidos);
         setUsuariosFiltrados(usuariosValidos);
       } catch (err) {
@@ -39,39 +43,36 @@ export const useUsuarioSearch = () => {
     cargarUsuarios();
   }, []);
 
-  // Filtrar usuarios según el query
- const buscar = useCallback(async (searchQuery) => {
-  setQuery(searchQuery);
+  const buscar = useCallback((searchQuery) => {
+    if (!searchQuery?.trim()) {
+      setUsuariosFiltrados(usuarios);
+      return;
+    }
 
-  if (!searchQuery || searchQuery.trim().length === 0) {
-    setUsuariosFiltrados(usuarios);
-    return;
-  }
+    const texto = searchQuery.trim().toLowerCase();
 
-  try {
-    setCargando(true);
+    const resultados = usuarios.filter((usuario) => {
+      const nombre = usuario.nombre?.toLowerCase() || '';
+      const apellido = usuario.apellido?.toLowerCase() || '';
+      const email = usuario.email?.toLowerCase() || '';
+      const rol = usuario.rol?.toLowerCase() || '';
 
-    const datos = await usuarioService.obtenerUsuarios({
-      busqueda: searchQuery,
-      rol: ROLES_PERMITIDOS,
-      skip: 0,
-      limit: 30,
+      return (
+        nombre.includes(texto) ||
+        apellido.includes(texto) ||
+        email.includes(texto) ||
+        rol.includes(texto)
+      );
     });
 
-    setUsuariosFiltrados(datos.data ?? datos ?? []);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setCargando(false);
-  }
-}, [usuarios]);
+    setUsuariosFiltrados(resultados);
+  }, [usuarios]);
 
   return {
     usuarios,
     usuariosFiltrados,
     cargando,
     error,
-    query,
     buscar,
   };
 };

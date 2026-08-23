@@ -12,7 +12,7 @@ export default function EncargadoSelector({
   const [query, setQuery] = useState('');
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
-
+console.log('Encargado:', usuariosFiltrados);
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (e) => {

@@ -17,19 +17,18 @@ export default function OcurrenciaBlock({
     if (!data.id_encargado || usuariosDisponibles.length === 0) {
       return null;
     }
-
     return (
       usuariosDisponibles.find(
         (u) => u.id === data.id_encargado
       ) || null
     );
   }, [data.id_encargado, usuariosDisponibles]);
-
+  
   const participantesSeleccionados = useMemo(() => {
     if (!data.participantes || usuariosDisponibles.length === 0) {
       return [];
+      
     }
-
     return data.participantes
       .map((id) =>
         usuariosDisponibles.find((u) => u.id === id)
