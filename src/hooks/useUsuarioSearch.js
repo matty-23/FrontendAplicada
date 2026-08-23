@@ -25,11 +25,10 @@ export const useUsuarioSearch = () => {
         const datos = Array.isArray(respuesta)
           ? respuesta
           : respuesta.data ?? respuesta.usuarios ?? [];
-
         const usuariosValidos = datos.filter((u) =>
           ROLES_PERMITIDOS.includes(u.rol)
         );
-
+        console.log('Usuarios recibidos:', datos);
         setUsuarios(usuariosValidos);
         setUsuariosFiltrados(usuariosValidos);
       } catch (err) {

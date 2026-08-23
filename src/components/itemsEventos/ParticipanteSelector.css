@@ -161,10 +161,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+
+  padding: 8px 10px 8px 12px;
+
   background: var(--color-primary-light, #e3f2fd);
   border: 1px solid var(--color-primary, #0066cc);
   border-radius: 20px;
+
   font-size: 13px;
 }
 
@@ -189,23 +192,35 @@
 }
 
 .participante-badge-remove {
-  background: none;
-  border: none;
-  color: var(--color-primary, #0066cc);
-  cursor: pointer;
-  font-size: 14px;
-  padding: 0;
+  width: 22px;
+  height: 22px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+
+  padding: 0;
+  margin-left: 4px;
+
+  border: none;
+  background: transparent;
+
+  color: #0066cc;
+
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  border-radius: 50%;
+
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
 }
 
 .participante-badge-remove:hover {
-  color: var(--color-text-primary, #000);
+  background: #dbeafe;
+  color: #dc2626;
 }
 
 /* Responsive */

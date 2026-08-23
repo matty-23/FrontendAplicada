@@ -11,35 +11,9 @@ export default function OcurrenciaBlock({
   canDelete = true,
   usuariosDisponibles = [],
 }) {
-  // ✅ CORREGIDO: Usar useMemo en lugar de useState + useEffect
-  // Evita loop infinito por cambios de referencia
-  const encargadoSeleccionado = useMemo(() => {
-    if (!data.id_encargado || usuariosDisponibles.length === 0) {
-      return null;
-    }
-    return (
-      usuariosDisponibles.find(
-        (u) => u.id === data.id_encargado
-      ) || null
-    );
-  }, [data.id_encargado, usuariosDisponibles]);
-  
-  const participantesSeleccionados = useMemo(() => {
-    if (!data.participantes || usuariosDisponibles.length === 0) {
-      return [];
-      
-    }
-    return data.participantes
-      .map((id) =>
-        usuariosDisponibles.find((u) => u.id === id)
-      )
-      .filter(Boolean);
-  }, [data.participantes, usuariosDisponibles]);
-
   const handleChange = (field, value) => {
     onChange(index, {
-      ...data,
-      [field]: value,
+      ...data, [field]: value,
     });
   };
 
@@ -131,9 +105,13 @@ export default function OcurrenciaBlock({
           Encargado
         </label>
         <EncargadoSelector
-          value={data.id_encargado || ''}
-          onChange={(id) => handleChange('id_encargado', id)}
-          usuarioSeleccionado={encargadoSeleccionado}
+          value={data.id_encargado}
+          onChange={(id) => {
+            onChange(index, {
+              ...data,
+              id_encargado: id,
+            });
+          }}
         />
       </div>
 
@@ -144,9 +122,15 @@ export default function OcurrenciaBlock({
           Participantes
         </label>
         <ParticipantesSelector
-          value={data.participantes || []}
-          onChange={(ids) => handleChange('participantes', ids)}
-          usuariosSeleccionados={participantesSeleccionados}
+          value={data.participantes}
+          usuariosSeleccionados={data.participantesSeleccionados || []}
+          onChange={(nuevosIds, nuevosUsuarios) => {
+            onChange(index, {
+              ...data,
+              participantes: nuevosIds,
+              participantesSeleccionados: nuevosUsuarios,
+            });
+          }}
         />
       </div>
     </div>

@@ -1,19 +1,42 @@
-import { useState, useRef, useEffect } from 'react';
-import useUsuarioSearch from '../../hooks/useUsuarioSearch';
-import './EncargadoSelector.css';
+import { useState, useRef, useEffect } from "react";
+import useUsuarioSearch from "../../hooks/useUsuarioSearch";
+import "./EncargadoSelector.css";
 
 export default function EncargadoSelector({
-  value = '',
+  value = "",
   onChange,
-  usuarioSeleccionado = null,
 }) {
-  const { usuariosFiltrados, buscar, cargando } = useUsuarioSearch();
+  const {
+    usuariosFiltrados,
+    buscar,
+    cargando,
+  } = useUsuarioSearch();
+
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
+
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
-console.log('Encargado:', usuariosFiltrados);
-  // Cerrar dropdown al hacer clic fuera
+
+  // Buscar el usuario seleccionado a partir del ID
+  const usuarioSeleccionado = usuariosFiltrados.find(
+    (usuario) =>
+      String(usuario.id) === String(value)
+  );
+
+  // Mostrar nombre del encargado seleccionado
+  useEffect(() => {
+    if (usuarioSeleccionado) {
+      setQuery(
+        `${usuarioSeleccionado.nombre || ""} ${usuarioSeleccionado.apellido || ""
+          }`.trim()
+      );
+    } else if (!value) {
+      setQuery("");
+    }
+  }, [usuarioSeleccionado, value]);
+
+  // Cerrar dropdown al hacer clic afuera
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -26,32 +49,56 @@ console.log('Encargado:', usuariosFiltrados);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
   }, []);
 
   const handleInputChange = (e) => {
     const valor = e.target.value;
+
     setQuery(valor);
+
     buscar(valor);
+
     setMostrarDropdown(true);
   };
 
   const handleSelectUsuario = (usuario) => {
+    // IMPORTANTE: solamente mandamos el ID
     onChange(usuario.id);
-    setQuery(usuario.nombre);
+
+    setQuery(
+      `${usuario.nombre || ""} ${usuario.apellido || ""
+        }`.trim()
+    );
+
     setMostrarDropdown(false);
   };
 
   const handleLimpiar = (e) => {
     e.preventDefault();
-    onChange('');
-    setQuery('');
+
+    onChange("");
+
+    setQuery("");
+
+    setMostrarDropdown(false);
   };
 
   return (
     <div className="encargado-selector">
+
       <div className="encargado-input-wrapper">
+
         <input
           ref={inputRef}
           type="text"
@@ -79,15 +126,21 @@ console.log('Encargado:', usuariosFiltrados);
             <i className="fa-solid fa-spinner fa-spin"></i>
           </div>
         )}
+
       </div>
 
-      {/* Dropdown */}
       {mostrarDropdown && (
-        <div ref={dropdownRef} className="encargado-dropdown">
+        <div
+          ref={dropdownRef}
+          className="encargado-dropdown"
+        >
           {usuariosFiltrados.length > 0 ? (
             <ul className="encargado-list">
               {usuariosFiltrados.map((usuario) => (
-                <li key={usuario.id} className="encargado-item">
+                <li
+                  key={usuario.id}
+                  className="encargado-item"
+                >
                   <button
                     type="button"
                     className="encargado-item-btn"
@@ -95,12 +148,14 @@ console.log('Encargado:', usuariosFiltrados);
                   >
                     <div className="encargado-item-info">
                       <span className="encargado-nombre">
-                        {usuario.nombre}
+                        {usuario.nombre} {usuario.apellido}
                       </span>
+
                       <span className="encargado-email">
                         {usuario.email}
                       </span>
                     </div>
+
                     <span className="encargado-rol">
                       {usuario.rol}
                     </span>
@@ -110,26 +165,16 @@ console.log('Encargado:', usuariosFiltrados);
             </ul>
           ) : (
             <div className="encargado-empty">
-              {query ? 'No se encontraron usuarios' : 'Escribe para buscar'}
+              {query
+                ? "No se encontraron usuarios"
+                : "Escribe para buscar"}
             </div>
           )}
         </div>
       )}
 
-      {/* Mostrar usuario seleccionado */}
-      {usuarioSeleccionado && (
-        <div className="encargado-selected">
-          <i className="fa-solid fa-check-circle"></i>
-          <div className="encargado-selected-info">
-            <span className="encargado-selected-nombre">
-              {usuarioSeleccionado.nombre}
-            </span>
-            <span className="encargado-selected-rol">
-              {usuarioSeleccionado.rol}
-            </span>
-          </div>
-        </div>
-      )}
+  
+
     </div>
   );
 }

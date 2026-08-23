@@ -130,7 +130,6 @@ export const eventoService = {
         if (!response.ok) throw new Error(`Error al agregar participantes: ${response.status}`);
         return null;
     },
-
     async borrarParticipante(idOcurrencia, usuarioId) {
         const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes/${usuarioId}`, {
             method: 'DELETE',
