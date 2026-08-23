@@ -4,6 +4,7 @@ import "./ParticipanteSelector.css";
 
 export default function ParticipantesSelector({
   value = [],
+  usuariosSeleccionados: usuariosIniciales = [],
   onChange,
 }) {
   const { usuariosFiltrados, buscar, cargando } = useUsuarioSearch();
