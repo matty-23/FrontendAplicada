@@ -3,13 +3,13 @@ import EmailEditor from './Editor';
 import { Adjuntar } from './Adjuntar';
 import { EncabezadoCorreo } from './EncabezadoCorreo';
 
-export function VentanaCorreo({ isMinimized,setIsMinimized,recipients,setRecipients,subject,setSubject,setBody,setFinalAttachments}) {
+export function VentanaCorreo({isMinimized,setIsMinimized,recipients,setRecipients,subject,setSubject,setBody,setFinalAttachments}) {
   const [position, setPosition] = useState({ top: 120, left: 320 });
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
 
   const handleMouseDown = (e) => {
-    if (isMinimized) return;
+    if (isMinimized) return; 
     setIsDragging(true);
     dragOffset.current = {
       x: e.clientX - position.left,
@@ -19,8 +19,13 @@ export function VentanaCorreo({ isMinimized,setIsMinimized,recipients,setRecipie
 
   const handleMouseMove = (e) => {
     if (!isDragging || isMinimized) return;
-    const newTop = Math.max(0, e.clientY - dragOffset.current.y);
-    const newLeft = Math.max(0, Math.min(e.clientX - dragOffset.current.x, window.innerWidth - 150));
+    
+    let newTop = e.clientY - dragOffset.current.y;
+    let newLeft = e.clientX - dragOffset.current.x;
+
+    newTop = Math.max(0, Math.min(newTop, window.innerHeight - 50)); 
+    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 150));
+
     setPosition({ top: newTop, left: newLeft });
   };
 
@@ -76,6 +81,7 @@ export function VentanaCorreo({ isMinimized,setIsMinimized,recipients,setRecipie
           <EmailEditor onChange={(html) => setBody(html)} />
         </div>
         
+        {/* Le pasamos setFinalAttachments para que guarde los archivos */}
         <Adjuntar onAttachmentsChange={(files) => setFinalAttachments(files)} />
       </div>
     </div>
