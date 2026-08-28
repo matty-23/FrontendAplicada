@@ -1,4 +1,4 @@
-const BFF_URL = import.meta.env.VITE_BFF_URL ?? 'http://localhost:3001';
+const BFF_URL = import.meta.env.VITE_BFF_URL;
 
 export class usuarioService {
   constructor() { }
@@ -122,7 +122,6 @@ export class usuarioService {
 
       return response.json();
     } catch (error) {
-      console.error('Error en obtenerUsuarioById:', error);
       throw error;
     }
   }
@@ -141,7 +140,6 @@ export class usuarioService {
 
       return response.status === 204 ? null : response.json();
     } catch (error) {
-      console.error('Error en eliminarUsuario:', error);
       throw error;
     }
   }

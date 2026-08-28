@@ -1,16 +1,10 @@
-const getApiUrl = () => import.meta.env.VITE_API_URL;
+const getApiUrl = () => import.meta.env.VITE_BFF_URL;
 
 export class authService {
   async login(correo, contraseña) {
     try {
       const url = `${getApiUrl()}/auth/login`;
-
-      console.log('LOGIN URL:', url);
-      console.log('LOGIN DATA:', {
-        correo,
-        contraseña,
-      });
-
+      console.log("LLEGAMOS HASTA EL SERVICE");
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -18,16 +12,12 @@ export class authService {
         },
         credentials: 'include',
         body: JSON.stringify({
+          name: "Maira",
           email: correo,
           password: contraseña,
         }),
       });
-
-      console.log('LOGIN STATUS:', response.status);
-
       const data = await response.json();
-
-      console.log('LOGIN RESPONSE:', data);
 
       if (!response.ok) {
         throw new Error(data?.message || 'Error al iniciar sesión');
@@ -35,7 +25,6 @@ export class authService {
 
       return data;
     } catch (error) {
-      console.error('ERROR LOGIN:', error);
       throw error;
     }
   }
@@ -53,7 +42,6 @@ export class authService {
 
       return true;
     } catch (error) {
-      console.error('ERROR LOGOUT:', error);
       throw error;
     }
   }

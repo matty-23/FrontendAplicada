@@ -12,6 +12,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from './context/userContext.jsx';
 import "./styles/dashboard.css";
 import './App.css';
+import { EmailPage } from "./pages/EmailPage.jsx";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Login */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login/>} />
+          <Route path="/email" element={<EmailPage/>} />
 
           {/* Versión 2 (Nueva versión moderna por defecto) */}
           <Route path="/admin" element={<AdminDashboard />} />

@@ -1,0 +1,86 @@
+.adjuntar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.email-footer {
+  border-top: none;
+  background: transparent;
+}
+
+.attachment-wrapper {
+  display: inline-block;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.v2-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f1f3f4;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.v2-btn-secondary:hover {
+  background-color: #e8eaed;
+}
+
+/* Lista de archivos */
+.email-attachments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #e8f0fe; /* Un azul suave tipo Google */
+  color: #1967d2;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  border: 1px solid #d2e3fc;
+}
+
+.attachment-name {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+
+.attachment-remove {
+  background: none;
+  border: none;
+  color: #1967d2;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  transition: background-color 0.2s;
+}
+
+.attachment-remove:hover {
+  background-color: #d2e3fc;
+  color: #174ea6;
+}
