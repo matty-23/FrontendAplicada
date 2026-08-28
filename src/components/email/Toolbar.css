@@ -1,19 +1,14 @@
 .toolbar {
-  position: fixed;        /* 👈 clave */
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 8px 14px;
   background: #fff;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid #ece9e3;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   flex-wrap: wrap;
+  margin-bottom: 12px; /* Separación con el área de escritura */
 }
 
 .tb-btn-text.underline { text-decoration: underline; }

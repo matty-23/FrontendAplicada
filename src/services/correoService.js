@@ -4,6 +4,7 @@ export class CorreoService {
 
     async notificaciones(destinatarios, asunto = null, mensaje = null, archivosAdjuntos = null) {
         const url = `${getApiUrl()}/api/correo/notificacion`;
+
         try {
             const response = await fetch(url, {
                 method: 'POST',

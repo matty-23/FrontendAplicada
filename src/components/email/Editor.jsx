@@ -2,13 +2,17 @@ import React, { useState, useRef } from 'react';
 import Toolbar from './Toolbar';
 import './Editor.css'; 
 
-export default function EmailEditor() {
+export default function EmailEditor({ onChange }) {
   const editorRef = useRef(null);
   const [htmlContent, setHtmlContent] = useState("");
 
   const handleInput = () => {
     if (editorRef.current) {
-      setHtmlContent(editorRef.current.innerHTML);
+      const content = editorRef.current.innerHTML;
+      
+    if (onChange) {
+        onChange(content);
+      }
     }
   };
 
@@ -16,7 +20,11 @@ export default function EmailEditor() {
     if (editorRef.current) {
       editorRef.current.innerHTML = "";
       setHtmlContent("");
+      if (onChange) {
+        onChange(""); 
+      }
     }
+
   };
 
   return (
@@ -29,7 +37,7 @@ export default function EmailEditor() {
         ref={editorRef}
         onInput={handleInput}
         placeholder="Escribe tu correo aquí..."
-        style={{ minHeight: '300px', border: '1px solid #ccc', padding: '15px', outline: 'none' }}
+        style={{flex: 1, overflowY: 'auto', minHeight: '150px', border: '1px solid #ccc', padding: '15px', outline: 'none' }}
       />
     </div>
   );

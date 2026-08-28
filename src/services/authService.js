@@ -4,7 +4,7 @@ export class authService {
   async login(correo, contraseña) {
     try {
       const url = `${getApiUrl()}/auth/login`;
-
+      console.log("LLEGAMOS HASTA EL SERVICE");
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -12,6 +12,7 @@ export class authService {
         },
         credentials: 'include',
         body: JSON.stringify({
+          name: "Maira",
           email: correo,
           password: contraseña,
         }),

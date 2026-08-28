@@ -21,7 +21,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Login */}
-          <Route path="/" element={<EmailPage/>} />
+          <Route path="/" element={<Login/>} />
+          <Route path="/email" element={<EmailPage/>} />
 
           {/* Versión 2 (Nueva versión moderna por defecto) */}
           <Route path="/admin" element={<AdminDashboard />} />
