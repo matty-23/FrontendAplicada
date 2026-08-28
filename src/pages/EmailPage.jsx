@@ -22,6 +22,8 @@ export function EmailPage() {
           setSubject={setters.setSubject}
           setBody={setters.setBody}
           setFinalAttachments={setters.setFinalAttachments}
+          formErrors={states.formErrors}
+          setFormErrors={setters.setFormErrors}
         />
       </div>
     </DashboardLayout>

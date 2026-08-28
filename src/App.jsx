@@ -12,7 +12,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from './context/userContext.jsx';
 import "./styles/dashboard.css";
 import './App.css';
-import MailLayout from "./components/EmailLayout.jsx";
 import { EmailPage } from "./pages/EmailPage.jsx";
 
 function App() {

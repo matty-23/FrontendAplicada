@@ -3,7 +3,7 @@ import EmailEditor from './Editor';
 import { Adjuntar } from './Adjuntar';
 import { EncabezadoCorreo } from './EncabezadoCorreo';
 
-export function VentanaCorreo({isMinimized,setIsMinimized,recipients,setRecipients,subject,setSubject,setBody,setFinalAttachments}) {
+export function VentanaCorreo({isMinimized,setIsMinimized,recipients,setRecipients,subject,setSubject,setBody,setFinalAttachments,formErrors,setFormErrors}) {
   const [position, setPosition] = useState({ top: 120, left: 320 });
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
@@ -62,26 +62,29 @@ export function VentanaCorreo({isMinimized,setIsMinimized,recipients,setRecipien
       </div>
 
       <div className="window-body">
-        <EncabezadoCorreo 
-          label="Destinatarios" 
-          id="recipients" 
-          value={recipients} 
-          onChange={(e) => setRecipients(e.target.value)} 
-          placeholder="ej. contacto@empresa.com" 
-        />
-        <EncabezadoCorreo 
-          label="Asunto del mensaje" 
-          id="subject" 
-          value={subject} 
-          onChange={(e) => setSubject(e.target.value)} 
-          placeholder="¿De qué trata esto?" 
-        />
+        
+        <div className="input-group">
+          <EncabezadoCorreo 
+            label="Destinatarios" 
+            id="recipients" 
+            value={recipients} 
+            onChange={(e) => {setRecipients(e.target.value);if (formErrors.recipients) setFormErrors({ ...formErrors, recipients: null });}} 
+            placeholder="ej. contacto@empresa.com" 
+          />
+          {formErrors.recipients && <span style={{color: 'red', fontSize: '12px'}}>{formErrors.recipients}</span>}
+        </div>
+
+        <EncabezadoCorreo label="Asunto" id="subject" value={subject} 
+          onChange={(e) => setSubject(e.target.value)} placeholder="Asunto" />
         
         <div className="email-editor-section">
-          <EmailEditor onChange={(html) => setBody(html)} />
+          <EmailEditor onChange={(html) => {
+            setBody(html);
+            if (formErrors.body) setFormErrors({ ...formErrors, body: null });
+          }} />
+          {formErrors.body && <span style={{color: 'red', fontSize: '12px'}}>{formErrors.body}</span>}
         </div>
         
-        {/* Le pasamos setFinalAttachments para que guarde los archivos */}
         <Adjuntar onAttachmentsChange={(files) => setFinalAttachments(files)} />
       </div>
     </div>
