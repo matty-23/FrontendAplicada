@@ -1,14 +1,17 @@
 import React, { useState, useRef } from 'react';
-import Toolbar from './Toolbar';
-import './Editor.css'; 
+import Toolbar from './email/Toolbar';
+import './email/Editor.css'; 
 
-export default function EmailComposer() {
+export default function EmailEditor({ onChange }) {
   const editorRef = useRef(null);
   const [htmlContent, setHtmlContent] = useState("");
 
   const handleInput = () => {
     if (editorRef.current) {
-      setHtmlContent(editorRef.current.innerHTML);
+      const content = editorRef.current.innerHTML;
+      setHtmlContent(content);
+      // 2. Ejecuta el onChange para pasarle el texto al padre
+      if (onChange) onChange(content); 
     }
   };
 
@@ -16,13 +19,13 @@ export default function EmailComposer() {
     if (editorRef.current) {
       editorRef.current.innerHTML = "";
       setHtmlContent("");
+      if (onChange) onChange(""); 
     }
   };
 
   return (
     <div className="email-composer-container">
       <Toolbar onClear={handleClear} />
-      
       <div 
         className="email-editor-area"
         contentEditable={true}
