@@ -1,28 +1,22 @@
 import OcurrenciaCard from "./OcurrenciaCard";
-import RecurrenciaForm from "../Recurrencia/RecurrenciaForm"; // <-- IMPORTAMOS EL FORM AQUÍ
+import RecurrenciaForm from "../Recurrencia/RecurrenciaForm";
+import "./OcurrenciasList.css";
 
-export default function OcurrenciasList({
-  ocurrencias,
-  onChange,
-  onEliminar,
-  onAgregar,
-  onSeparar,
-  soloLectura = false,
-  /* Props de Recurrencia */
-  isEditing,
-  esRecurrente,
-  recurrenciaRRule,
-  onToggleRecurrencia,
-  onChangeRRule
-}) {
-  const ordenadas = [...ocurrencias].sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio));
+export default function OcurrenciasList({ocurrencias,onChange,onEliminar,onAgregar,onSeparar,soloLectura = false,
+  isEditing,esRecurrente,recurrenciaRRule,onToggleRecurrencia,onChangeRRule,}) {
+    
+  const ordenadas = [...ocurrencias].sort(
+    (a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio)
+  );
 
   return (
     <div className="ocurrencias-list">
       <div className="ocurrencias-list-header">
         <div>
           <h3>Programación</h3>
-          <span>{ordenadas.length} {ordenadas.length === 1 ? "día" : "días"}</span>
+          <span>
+            {ordenadas.length} {ordenadas.length === 1 ? "día" : "días"}
+          </span>
         </div>
       </div>
 
@@ -36,12 +30,10 @@ export default function OcurrenciasList({
             onEliminar={onEliminar}
             onSeparar={onSeparar}
             soloLectura={soloLectura}
-          // Ya no le pasamos las props de recurrencia al Card individual
           />
         ))}
       </div>
 
-      {/* 1. RESTAURAMOS EL BOTÓN PARA AGREGAR MÚLTIPLES BLOQUES */}
       {!soloLectura && !esRecurrente && (
         <button
           type="button"
@@ -53,13 +45,13 @@ export default function OcurrenciasList({
         </button>
       )}
 
-      {/* 2. RECURRENCIA GLOBAL AL EVENTO (Siempre visible) */}
       {!soloLectura && (
-        <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid var(--gray-200)" }}>
-          <h4 style={{ fontSize: "14px", fontWeight: 600, color: "var(--gray-800)", marginBottom: "16px" }}>
-            <i className="fa-solid fa-rotate" style={{ marginRight: "8px", color: "var(--blue-500)" }}></i>
+        <div className="ocurrencias-list-recurrencia">
+          <h4 className="ocurrencias-list-recurrencia-title">
+            <i className="fa-solid fa-rotate" />
             Regla de Repetición
           </h4>
+
           <RecurrenciaForm
             isEditing={isEditing}
             esRecurrente={esRecurrente}

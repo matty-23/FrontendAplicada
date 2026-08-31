@@ -1,13 +1,6 @@
 import { formatearRangoFechas } from "../../../utils/ocurrenciaUtils";
 
-export default function OcurrenciaCardHeader({
-  ocurrencia,
-  index,
-  expandida,
-  soloLectura,
-  onToggle,
-  onEliminar,
-}) {
+export default function OcurrenciaCardHeader({ocurrencia, index,expandida,soloLectura,onToggle,onEliminar,}) {
   return (
     <div className="ocurrencia-card-header" onClick={onToggle}>
       <div className="ocurrencia-card-header-main">
