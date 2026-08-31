@@ -1,4 +1,4 @@
-import { useRRule, PATRONES_PREDEFINIDOS } from "../../../hooks/Evento/useRRule";
+import { useRRule } from "../../../hooks/Evento/useRRule";
 import RecurrenciaCustomPanel from "./RecurrenciaCustomPanel";
 import "./RecurrenciaForm.css";
 
@@ -6,8 +6,9 @@ export default function RecurrenciaForm({
   esRecurrente,
   onToggleRecurrencia,
   onChangeRRule,
+  fechaInicio
 }) {
-  const hookData = useRRule(esRecurrente, onChangeRRule);
+  const hookData = useRRule(esRecurrente, onChangeRRule, fechaInicio);
 
   return (
     <div className="recurrencia-form">
@@ -24,7 +25,7 @@ export default function RecurrenciaForm({
         </label>
       </div>
 
-      {esRecurrente && (
+    {esRecurrente && (
         <div className="recurrencia-config">
           <div className="recurrencia-field">
             <label>Patrón de repetición</label>
@@ -33,15 +34,13 @@ export default function RecurrenciaForm({
               value={hookData.selectValue}
               onChange={(e) => hookData.setSelectValue(e.target.value)}
             >
-              <option value={PATRONES_PREDEFINIDOS.DAILY}>Todos los días</option>
-              <option value={PATRONES_PREDEFINIDOS.WEEKLY_MO}>Cada semana, el lunes</option>
-              <option value={PATRONES_PREDEFINIDOS.MONTHLY_LAST_MO}>Todos los meses, el último lunes</option>
-              <option value={PATRONES_PREDEFINIDOS.YEARLY_AUG_31}>Anualmente, el 31 de agosto</option>
-              <option value={PATRONES_PREDEFINIDOS.WEEKDAYS}>Todos los días hábiles (Lun-Vie)</option>
-              <option value="CUSTOM">Personalizado…</option>
+              {Object.entries(hookData.patrones).map(([key, patron]) => (
+                <option key={key} value={patron}>
+                  {hookData.labels[key]}
+                </option>
+              ))}
             </select>
           </div>
-
           {hookData.selectValue === "CUSTOM" && (
             <RecurrenciaCustomPanel hookData={hookData} />
           )}

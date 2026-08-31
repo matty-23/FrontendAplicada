@@ -63,7 +63,12 @@ export function useEventoForm(id) {
   const handleToggleRecurrencia = (activo) => {
     setEsRecurrente(activo);
     if (activo) {
-      setRecurrenciaRRule("FREQ=DAILY"); // Valor predeterminado al activar
+      setRecurrenciaRRule("FREQ=DAILY");
+
+      // PURGA: Nos quedamos solo con la primera ocurrencia
+      if (ocurrencias.length > 1) {
+        establecerOcurrencias([ocurrencias[0]]);
+      }
     } else {
       setRecurrenciaRRule("unico");
     }

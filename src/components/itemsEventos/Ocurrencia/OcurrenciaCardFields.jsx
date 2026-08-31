@@ -2,20 +2,15 @@ import EncargadoSelector from "../EncargadoSelector";
 import ParticipantesSelector from "../ParticipanteSelector";
 
 export default function OcurrenciaCardFields({
-  ocurrencia,
-  soloLectura,
-  fechaI,
-  fechaF,
-  horaI,
-  horaF,
-  onDateChange,
-  onTimeChange,
-  onAllDayChange,
-  onChange,
+  ocurrencia, soloLectura,
+  fechaI, fechaF,
+  horaI, horaF,
+  onDateChange, onTimeChange, onAllDayChange, onChange,
+  esRecurrente
 }) {
   return (
     <div className="ocurrencia-card-fields">
-      
+
       {/* CHECKBOX TODO EL DÍA */}
       <div className="ocurrencia-card-field ocurrencia-card-field-full ocurrencia-card-allday">
         <input
@@ -33,7 +28,7 @@ export default function OcurrenciaCardFields({
 
       {/* FECHAS */}
       <div className="ocurrencia-card-field">
-        <label>Fecha de inicio</label>
+        <label>{esRecurrente ? "A partir del (Fecha de inicio)" : "Fecha de inicio"} </label>
         <input
           type="date"
           className="v2-search"
@@ -42,18 +37,18 @@ export default function OcurrenciaCardFields({
           onChange={(e) => onDateChange("Inicio", e.target.value)}
         />
       </div>
-      
-      <div className="ocurrencia-card-field">
-        <label>Fecha de finalización</label>
-        <input
-          type="date"
-          className="v2-search"
-          value={fechaF}
-          disabled={soloLectura}
-          onChange={(e) => onDateChange("Finalizacion", e.target.value)}
-        />
-      </div>
-
+      {!esRecurrente && (
+        <div className="ocurrencia-card-field">
+          <label>Fecha de finalización</label>
+          <input
+            type="date"
+            className="v2-search"
+            value={fechaF}
+            disabled={soloLectura}
+            onChange={(e) => onDateChange("Finalizacion", e.target.value)}
+          />
+        </div>
+      )}
       {/* HORAS */}
       {!ocurrencia.allDay && (
         <>
