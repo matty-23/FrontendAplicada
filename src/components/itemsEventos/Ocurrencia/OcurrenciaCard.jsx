@@ -3,8 +3,8 @@ import OcurrenciaCardHeader from "./OcurrenciaCardHeader";
 import OcurrenciaCardFields from "./OcurrenciaCardFields";
 import OcurrenciaCardSeparar from "./OcurrenciaCardSeparar";
 
-import { useOcurrenciaFechas } from "./useOcurrenciaFechas";
-import { esOcurrenciaRango } from "./ocurrenciaUtils";
+import { useOcurrenciaFechas } from "../../../hooks/Evento/useOcurrenciasFechas";
+import { esOcurrenciaRango } from "../../../utils/ocurrenciaUtils";
 
 import "./OcurrenciaCard.css";
 

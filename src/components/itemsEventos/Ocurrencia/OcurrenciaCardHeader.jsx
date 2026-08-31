@@ -1,4 +1,4 @@
-import { formatearRangoFechas } from "./ocurrenciaUtils";
+import { formatearRangoFechas } from "../../../utils/ocurrenciaUtils";
 
 export default function OcurrenciaCardHeader({
   ocurrencia,

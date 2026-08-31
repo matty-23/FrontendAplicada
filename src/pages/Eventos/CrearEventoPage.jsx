@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import EventoForm from "../../components/itemsEventos/EventoForm";
 import { useEventoForm } from "../../hooks/Evento/useEventoForm";
-import "./CrearEventoPage.css";
+import '../../styles/CrearEventoPage.css';
 
 export default function CrearEventoPage() {
   const navigate = useNavigate();

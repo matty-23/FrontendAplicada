@@ -1,7 +1,6 @@
-// components/itemsEventos/EventoForm.jsx
 import Card from "../Card";
 import EventoGeneralForm from "./EventoGeneralForm";
-import OcurrenciasList from "./OcurrenciasList";
+import OcurrenciasList from "./Ocurrencia/OcurrenciasList";
 
 export default function EventoForm({
   evento,

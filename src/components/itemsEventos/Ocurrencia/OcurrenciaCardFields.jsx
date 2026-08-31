@@ -1,5 +1,5 @@
-import EncargadoSelector from "./EncargadoSelector";
-import ParticipantesSelector from "./ParticipanteSelector";
+import EncargadoSelector from "../EncargadoSelector";
+import ParticipantesSelector from "../ParticipanteSelector";
 
 export default function OcurrenciaCardFields({
   ocurrencia,

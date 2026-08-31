@@ -13,7 +13,7 @@ import { useEventosFilter } from "../../hooks/Evento/useEventosFilter";
 import { useEventosSelection } from "../../hooks/Evento/useEventosSelection";
 
 import {adaptarEventoAUI,obtenerFechasConEventos} from "../../utils/eventoUtils";
-import './EventoPages.css'
+import '../../styles/EventoPages.css'
 const TABS = ["Todos", "Pendientes", "En revisión", "Activos"];
 
 export default function EventosPage() {

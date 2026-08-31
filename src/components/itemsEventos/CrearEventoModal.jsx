@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useEventoForm } from "../../hooks/Evento/useEventoForm";
-
 import EventoGeneralForm from "./EventoGeneralForm";
 import RecurrenciaForm from "./Recurrencia/RecurrenciaForm";
-import OcurrenciasList from "./OcurrenciasList";
-
+import OcurrenciasList from "./Ocurrencia/OcurrenciasList";
 import "./CrearEventoModal.css";
 
 export default function CrearEventoModal({
