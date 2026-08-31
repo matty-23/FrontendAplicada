@@ -45,15 +45,29 @@ export function useCalendario() {
   const handleDatesSet = (info) => {
     const { start, end, view } = info;
     let titulo = "";
+
     if (view.type === "dayGridMonth") {
-      titulo = start.toLocaleString("es-AR", { month: "long", year: "numeric", });
+      titulo = view.currentStart.toLocaleString("es-AR", {
+        month: "long",
+        year: "numeric",
+      });
     }
 
     if (view.type === "timeGridWeek") {
       const fechaFin = new Date(end);
       fechaFin.setDate(fechaFin.getDate() - 1);
-      const inicio = start.toLocaleDateString("es-AR", { day: "numeric", month: "long", });
-      const fin = fechaFin.toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric", });
+
+      const inicio = start.toLocaleDateString("es-AR", {
+        day: "numeric",
+        month: "long",
+      });
+
+      const fin = fechaFin.toLocaleDateString("es-AR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
       titulo = `${inicio} – ${fin}`;
     }
 

@@ -8,6 +8,7 @@ function crearOcurrenciaBase(datos = {}) {
     idLocal: datos.idLocal || generarIdLocal(),
     fechaInicio: datos.fechaInicio || "",
     fechaFinalizacion: datos.fechaFinalizacion || datos.fechaInicio || "",
+    allDay: datos.allDay ?? true, // <-- NUEVO: Checkbox "Todo el día" activado por defecto
     lugar: datos.lugar || "",
     cantidadPersonas: datos.cantidadPersonas ?? 0,
     id_encargado: datos.id_encargado || "",

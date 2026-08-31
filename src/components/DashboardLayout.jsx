@@ -1,4 +1,4 @@
-import {Sidebar} from "./Sidebar";
+import {Sidebar} from "./SideBar";
 import {TopBar} from "./TopBar";
 
 export default function DashboardLayout({ breadcrumb, title, rightActions, children }) {

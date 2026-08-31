@@ -40,15 +40,19 @@ export function useRecurrencia() {
 
   // GENERAR FECHAS DESDE RECURRENCIA
   const generarFechasDesdeRecurrencia = (fechaInicio, fechaFin) => {
-    if (!fechaInicio || !fechaFin) {
+    // Verificar que los objetos existan y sean fechas válidas
+    if (
+      !fechaInicio ||
+      !fechaFin ||
+      isNaN(fechaInicio.getTime()) ||
+      isNaN(fechaFin.getTime())
+    ) {
       return [];
     }
-
     // No repetir
     if (recurrencia.tipo === "no-repetir") {
-      return [fechaInicio.toISOString().split("T")[0],];
+      return [fechaInicio.toISOString().split("T")[0]];
     }
-
     try {
       let rule;
       switch (recurrencia.tipo) {

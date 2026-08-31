@@ -1,107 +1,221 @@
-// components/calendario/CrearEventoModal.jsx
-
 import { useEffect, useState } from "react";
 import { useEventoForm } from "../../hooks/Evento/useEventoForm";
+
 import EventoGeneralForm from "./EventoGeneralForm";
 import RecurrenciaForm from "./RecurrenciaForm";
 import OcurrenciasList from "./OcurrenciasList";
+
 import "./CrearEventoModal.css";
-import { useEvento } from "../../hooks/Evento/useEvento";
+
 export default function CrearEventoModal({
   isOpen,
   onClose,
   rangoSeleccionado,
   onSuccess,
+  eventoSeleccionado,
+  modo = "crear",
 }) {
+
+  // ==========================================
+  // ID DEL EVENTO
+  // ==========================================
+
+  const idEvento =
+    eventoSeleccionado?.idEvento ??
+    null;
+
+  // ==========================================
+  // FORMULARIO
+  // ==========================================
+
   const {
     evento,
     ocurrencias,
-    recurrencia,
     isEditing,
+
     separarOcurrencia,
     actualizarCampoEvento,
+
     agregarOcurrencia,
     actualizarOcurrencia,
     actualizarCampoOcurrencia,
     eliminarOcurrencia,
+    esRecurrente,
+    recurrenciaRRule,
+    setRecurrenciaRRule,
+    handleToggleRecurrencia,
     agregarRango,
-    generarFechasDesdeRecurrencia,
+
     guardarEvento,
-  } = useEventoForm();
 
-  const [error, setError] = useState(null);
-  const [guardando, setGuardando] = useState(false);
+  } = useEventoForm(
+    modo === "crear"
+      ? null
+      : idEvento
+  );
 
-  // Cuando se abre con rango seleccionado
+  const [error, setError] =
+    useState(null);
+
+  const [guardando, setGuardando] =
+    useState(false);
+
+  // ==========================================
+  // LIMPIAR ERROR AL CAMBIAR DE MODAL
+  // ==========================================
+
   useEffect(() => {
-    if (isOpen && rangoSeleccionado) {
-      const { fechaInicio, fechaFin, allDay } = rangoSeleccionado;
 
-      // El input datetime-local necesita el formato estricto YYYY-MM-DDTHH:mm
-      const formatearFecha = (fechaStr, esFin) => {
-        if (!fechaStr) return "";
-        if (fechaStr.includes("T")) {
-          return fechaStr.substring(0, 16); // Corta la zona horaria, deja YYYY-MM-DDTHH:mm
-        }
-        // Si es un evento de todo el día, asignamos 00:00 al inicio y 23:59 al final
-        return `${fechaStr}T${esFin ? "23:59" : "00:00"}`;
-      };
-
-      // Limpiar ocurrencias existentes y agregar el rango seleccionado
-      agregarRango(
-        formatearFecha(fechaInicio, false),
-        formatearFecha(fechaFin, true),
-        { allDay }
-      );
+    if (isOpen) {
+      setError(null);
     }
-  }, [isOpen, rangoSeleccionado]);
 
-  // Cuando cambia el tipo de recurrencia
+  }, [
+    isOpen,
+    idEvento,
+    modo
+  ]);
+
+  // ==========================================
+  // RANGO SELECCIONADO
+  // ==========================================
+
   useEffect(() => {
-    if (recurrencia.tipo !== "no-repetir") {
-      // Generar ocurrencias desde recurrencia
-      const fechas =
-        generarFechasDesdeRecurrencia(
-          new Date(ocurrencias[0]?.fechaInicio),
-          new Date(ocurrencias[0]?.fechaFinalizacion)
-        );
 
-      // Reemplazar ocurrencias con las generadas
-      // por recurrencia
+    if (
+      !isOpen ||
+      modo !== "crear" ||
+      !rangoSeleccionado
+    ) {
+      return;
     }
-  }, [recurrencia.tipo]);
 
-  const handleGuardar = async () => {
-    setError(null);
-    setGuardando(true);
+    const {
+      fechaInicio,
+      fechaFin,
+      allDay,
+    } = rangoSeleccionado;
 
-    try {
-      await guardarEvento();
+    const formatearFecha = (
+      fechaStr,
+      esFin
+    ) => {
 
-      if (onSuccess) {
-        onSuccess();
+      if (!fechaStr) {
+        return "";
       }
 
-      onClose();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setGuardando(false);
-    }
-  };
+      if (
+        fechaStr.includes("T")
+      ) {
+        return fechaStr.substring(
+          0,
+          16
+        );
+      }
 
-  if (!isOpen) return null;
+      return `${fechaStr}T${esFin
+          ? "23:59"
+          : "00:00"
+        }`;
+    };
+
+    agregarRango(
+      formatearFecha(
+        fechaInicio,
+        false
+      ),
+      formatearFecha(
+        fechaFin,
+        true
+      ),
+      {
+        allDay,
+      }
+    );
+
+  }, [
+    isOpen,
+    modo,
+    rangoSeleccionado
+  ]);
+
+  // ==========================================
+  // GUARDAR
+  // ==========================================
+
+  const handleGuardar =
+    async () => {
+
+      setError(null);
+      setGuardando(true);
+
+      try {
+
+        await guardarEvento();
+
+        if (onSuccess) {
+          onSuccess();
+        }
+
+        onClose();
+
+      } catch (err) {
+
+        console.error(
+          "Error al guardar:",
+          err
+        );
+
+        setError(
+          err.message ||
+          "Ocurrió un error al guardar"
+        );
+
+      } finally {
+
+        setGuardando(false);
+
+      }
+    };
+
+  // ==========================================
+  // NO MOSTRAR SI ESTÁ CERRADO
+  // ==========================================
+
+  if (!isOpen) {
+    return null;
+  }
+
+  // ==========================================
+  // MODAL
+  // ==========================================
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+    >
+
       <div
         className="modal-content"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) =>
+          e.stopPropagation()
+        }
       >
-        {/* Header */}
+
+        {/* HEADER */}
+
         <div className="modal-header">
+
           <h2>
-            {isEditing ? "Editar" : "Crear"} Evento
+
+            {modo === "crear"
+              ? "Crear Evento"
+              : modo === "ver"
+                ? "Detalle del Evento"
+                : "Editar Evento"}
+
           </h2>
 
           <button
@@ -111,45 +225,72 @@ export default function CrearEventoModal({
           >
             ×
           </button>
+
         </div>
 
-        {/* Body */}
+        {/* BODY */}
+
         <div className="modal-body">
-          {/* Error */}
+
           {error && (
             <div className="modal-error">
+
               <i className="fa-solid fa-circle-exclamation"></i>
+
               {error}
+
             </div>
           )}
 
-          {/* Info General */}
+          {/* INFORMACIÓN GENERAL */}
+
           <EventoGeneralForm
             evento={evento}
-            onChange={actualizarCampoEvento}
+            onChange={
+              actualizarCampoEvento
+            }
           />
 
-          {/* Recurrencia */}
-          <RecurrenciaForm
-            recurrencia={recurrencia}
-            onUpdate={(cambios) => {
-              // Actualizar recurrencia
-            }}
-          />
+          {/* OCURRENCIAS (bloques de fecha: independientes de la
+              recurrencia, siempre se pueden agregar o quitar) */}
 
-          {/* Ocurrencias */}
           <OcurrenciasList
             ocurrencias={ocurrencias}
             valoresGenerales={evento}
-            onChange={actualizarOcurrencia}
-            onAgregar={agregarOcurrencia}
-            onEliminar={eliminarOcurrencia}
-            onSeparar={separarOcurrencia}
+
+            onChange={
+              actualizarOcurrencia
+            }
+
+            onAgregar={
+              agregarOcurrencia
+            }
+
+            onEliminar={
+              eliminarOcurrencia
+            }
+
+            onSeparar={
+              separarOcurrencia
+            }
           />
+
+          {/* RECURRENCIA */}
+
+          <RecurrenciaForm
+            isEditing={isEditing}
+            esRecurrente={esRecurrente}
+            recurrenciaRRule={recurrenciaRRule}
+            onToggleRecurrencia={handleToggleRecurrencia}
+            onChangeRRule={setRecurrenciaRRule}
+          />
+
         </div>
 
-        {/* Footer */}
+        {/* FOOTER */}
+
         <div className="modal-footer">
+
           <button
             className="v2-btn-secondary"
             onClick={onClose}
@@ -165,6 +306,7 @@ export default function CrearEventoModal({
             disabled={guardando}
             type="button"
           >
+
             {guardando ? (
               <>
                 <i className="fa-solid fa-spinner fa-spin"></i>
@@ -176,9 +318,13 @@ export default function CrearEventoModal({
                 Guardar
               </>
             )}
+
           </button>
+
         </div>
+
       </div>
+
     </div>
   );
 }

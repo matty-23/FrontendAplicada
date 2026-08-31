@@ -17,6 +17,44 @@ export default function OcurrenciaBlock({
     });
   };
 
+  // --- LÓGICA PARA SEPARAR FECHA Y HORA ---
+  const fechaI = data.fechaInicio ? data.fechaInicio.split("T")[0] : "";
+  const horaI = data.fechaInicio && data.fechaInicio.includes("T") 
+    ? data.fechaInicio.split("T")[1].substring(0, 5) 
+    : "00:00";
+    
+  const fechaF = data.fechaFinalizacion ? data.fechaFinalizacion.split("T")[0] : "";
+  const horaF = data.fechaFinalizacion && data.fechaFinalizacion.includes("T") 
+    ? data.fechaFinalizacion.split("T")[1].substring(0, 5) 
+    : "23:59";
+
+  const handleDateChange = (tipo, nuevaFecha) => {
+    if (!nuevaFecha) {
+      handleChange(`fecha${tipo}`, "");
+      return;
+    }
+    const h = tipo === "Inicio" ? horaI : horaF;
+    const finalTime = data.allDay ? (tipo === "Inicio" ? "00:00" : "23:59") : h;
+    handleChange(`fecha${tipo}`, `${nuevaFecha}T${finalTime}`);
+  };
+
+  const handleTimeChange = (tipo, nuevaHora) => {
+    const f = tipo === "Inicio" ? fechaI : fechaF;
+    if (!f) return;
+    handleChange(`fecha${tipo}`, `${f}T${nuevaHora}`);
+  };
+
+  const handleAllDayToggle = (e) => {
+    const checked = e.target.checked;
+    handleChange("allDay", checked);
+    
+    // Forzar inicio a 00:00 y fin a 23:59 si se marca todo el día
+    if (checked) {
+      if (fechaI) handleChange("fechaInicio", `${fechaI}T00:00`);
+      if (fechaF) handleChange("fechaFinalizacion", `${fechaF}T23:59`);
+    }
+  };
+
   return (
     <div className="ocurrencia-block">
       {/* Header */}
@@ -25,7 +63,6 @@ export default function OcurrenciaBlock({
           <i className="fa-regular fa-calendar-check"></i>
           Ocurrencia {index + 1}
         </h4>
-
         {canDelete && (
           <button
             type="button"
@@ -40,32 +77,64 @@ export default function OcurrenciaBlock({
 
       {/* Campos de fecha y lugar */}
       <div className="v2-grid-2">
+        {/* CHECKBOX TODO EL DÍA */}
+        <div className="ocurrencia-field ocurrencia-field-full" style={{ flexDirection: "row", alignItems: "center", gap: "8px" }}>
+          <input
+            type="checkbox"
+            id={`blockAllDay-${index}`}
+            checked={data.allDay || false}
+            onChange={handleAllDayToggle}
+            style={{ width: "auto", cursor: "pointer", accentColor: "var(--blue-800)" }}
+          />
+          <label htmlFor={`blockAllDay-${index}`} style={{ cursor: "pointer", margin: 0 }}>
+            Todo el día
+          </label>
+        </div>
+
         {/* Fecha de inicio */}
         <div className="ocurrencia-field">
           <label>Inicio</label>
-          <input
-            type="datetime-local"
-            className="v2-search"
-            required
-            value={data.fechaInicio || ''}
-            onChange={(e) =>
-              handleChange('fechaInicio', e.target.value)
-            }
-          />
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input
+              type="date"
+              className="v2-search"
+              required
+              value={fechaI}
+              onChange={(e) => handleDateChange("Inicio", e.target.value)}
+            />
+            {!data.allDay && (
+              <input
+                type="time"
+                className="v2-search"
+                required
+                value={horaI}
+                onChange={(e) => handleTimeChange("Inicio", e.target.value)}
+              />
+            )}
+          </div>
         </div>
 
         {/* Fecha de finalización */}
         <div className="ocurrencia-field">
           <label>Finalización</label>
-          <input
-            type="datetime-local"
-            className="v2-search"
-            required
-            value={data.fechaFinalizacion || ''}
-            onChange={(e) =>
-              handleChange('fechaFinalizacion', e.target.value)
-            }
-          />
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input
+              type="date"
+              className="v2-search"
+              required
+              value={fechaF}
+              onChange={(e) => handleDateChange("Finalizacion", e.target.value)}
+            />
+            {!data.allDay && (
+              <input
+                type="time"
+                className="v2-search"
+                required
+                value={horaF}
+                onChange={(e) => handleTimeChange("Finalizacion", e.target.value)}
+              />
+            )}
+          </div>
         </div>
 
         {/* Lugar */}
@@ -107,10 +176,7 @@ export default function OcurrenciaBlock({
         <EncargadoSelector
           value={data.id_encargado}
           onChange={(id) => {
-            onChange(index, {
-              ...data,
-              id_encargado: id,
-            });
+            handleChange('id_encargado', id);
           }}
         />
       </div>

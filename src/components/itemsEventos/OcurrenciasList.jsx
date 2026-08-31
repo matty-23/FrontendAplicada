@@ -5,7 +5,8 @@ export default function OcurrenciasList({
   onChange,
   onEliminar,
   onAgregar,
-  onSeparar
+  onSeparar,
+  soloLectura = false,
 }) {
   const ordenadas = [
     ...ocurrencias,
@@ -38,34 +39,30 @@ export default function OcurrenciasList({
         {ordenadas.map(
           (ocurrencia, index) => (
             <OcurrenciaCard
-              key={
-                ocurrencia.idLocal
-              }
-              ocurrencia={
-                ocurrencia
-              }
+              key={ocurrencia.idLocal}
+              ocurrencia={ocurrencia}
               index={index}
-              onChange={
-                onChange
-              }
-              onEliminar={
-                onEliminar
-              }
+              onChange={onChange}
+              onEliminar={onEliminar}
               onSeparar={onSeparar}
+              soloLectura={soloLectura}
             />
           )
         )}
 
       </div>
 
-      <button
-        type="button"
-        className="crear-evento-add-ocurrencia v2-btn-ghost"
-        onClick={onAgregar}
-      >
-        <i className="fa-solid fa-plus" />
-        Agregar otra fecha
-      </button>
+      {/* Agregar bloques de fecha es independiente de la recurrencia:
+          solo se oculta en modo solo lectura */}
+      {!soloLectura && (
+        <button
+          type="button"
+          className="crear-evento-add-ocurrencia v2-btn-ghost"
+          onClick={onAgregar}
+        >
+          <i className="fa-solid fa-plus" />
+          Agregar otra fecha
+        </button>)}
 
     </div>
   );

@@ -1,337 +1,250 @@
-import { useRecurrencia } from "../../hooks/Evento/useRecurrencia";
-import "./RecurrenciaForm.css";
+import { useState, useEffect } from "react";
+import "./RecurrenciaForm.css"; // Usa tus estilos existentes
 
-const DIAS_SEMANA = [
-  { valor: 0, nombre: "L" },
-  { valor: 1, nombre: "M" },
-  { valor: 2, nombre: "X" },
-  { valor: 3, nombre: "J" },
-  { valor: 4, nombre: "V" },
-  { valor: 5, nombre: "S" },
-  { valor: 6, nombre: "D" },
-];
+const PATRONES_PREDEFINIDOS = {
+  DAILY: "FREQ=DAILY",
+  WEEKLY_MO: "FREQ=WEEKLY;BYDAY=MO",
+  MONTHLY_LAST_MO: "FREQ=MONTHLY;BYDAY=-1MO",
+  YEARLY_AUG_31: "FREQ=YEARLY;BYMONTH=8;BYMONTHDAY=31",
+  WEEKDAYS: "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR",
+  CUSTOM: "CUSTOM",
+};
+
+// Formatea la fecha de un input "YYYY-MM-DD" al formato UTC "YYYYMMDDThhmmssZ" que requiere Google Calendar
+const formatUntilDate = (dateString) => {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  // Compensamos el offset para evitar que caiga en el día anterior por la zona horaria
+  d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+  
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  
+  // Establecemos el fin de ese día en UTC
+  return `${yyyy}${mm}${dd}T235959Z`;
+};
 
 export default function RecurrenciaForm({
-  recurrenciaInicial,
-  onChange,
+  isEditing,
+  esRecurrente,
+  recurrenciaRRule, // Puede servirte luego si decides hacer "reverse-parsing" del RRule
+  onToggleRecurrencia,
+  onChangeRRule,
 }) {
-  const {
-    recurrencia,
-    actualizarTipo,
-    actualizarFrecuencia,
-    toggleDiaSemana,
-    actualizarConfiguracion,
-  } = useRecurrencia(recurrenciaInicial);
+  const [selectValue, setSelectValue] = useState(PATRONES_PREDEFINIDOS.DAILY);
+  
+  // Estados para el Módulo Personalizado
+  const [customFreq, setCustomFreq] = useState("WEEKLY");
+  const [customInterval, setCustomInterval] = useState(1);
+  const [customDias, setCustomDias] = useState([]);
+  
+  // Estados para las Reglas de Finalización
+  const [endType, setEndType] = useState("never"); // 'never', 'count', 'until'
+  const [endCount, setEndCount] = useState(10);
+  const [endDate, setEndDate] = useState("");
 
-  const cambiarTipo = (tipo) => {
-    actualizarTipo(tipo);
+  // 1. Sincronizar el selector predefinido
+  useEffect(() => {
+    if (selectValue !== "CUSTOM" && esRecurrente) {
+      onChangeRRule(selectValue);
+    }
+  }, [selectValue, esRecurrente]);
 
-    onChange?.({
-      ...recurrencia,
-      tipo,
-      diasSemana:
-        tipo === "semanal"
-          ? recurrencia.diasSemana
-          : [],
-    });
-  };
+  // 2. Generar el RRule Avanzado Dinámicamente
+  useEffect(() => {
+    if (selectValue === "CUSTOM") {
+      let rule = `FREQ=${customFreq};INTERVAL=${customInterval}`;
+      
+      // Agrega días si es semanal
+      if (customFreq === "WEEKLY" && customDias.length > 0) {
+        rule += `;BYDAY=${customDias.join(",")}`;
+      }
 
-  const cambiarFrecuencia = (e) => {
-    const valor = Math.max(
-      1,
-      Number(e.target.value) || 1
+      // Agrega la condición de fin
+      if (endType === "count" && endCount > 0) {
+        rule += `;COUNT=${endCount}`;
+      } else if (endType === "until" && endDate) {
+        rule += `;UNTIL=${formatUntilDate(endDate)}`;
+      }
+
+      onChangeRRule(rule);
+    }
+  }, [customFreq, customInterval, customDias, endType, endCount, endDate, selectValue]);
+
+  const toggleDiaPersonalizado = (dia) => {
+    setCustomDias((prev) =>
+      prev.includes(dia) ? prev.filter((d) => d !== dia) : [...prev, dia]
     );
-
-    actualizarFrecuencia(valor);
-
-    onChange?.({
-      ...recurrencia,
-      frecuencia: valor,
-    });
-  };
-
-  const cambiarDia = (dia) => {
-    toggleDiaSemana(dia);
-
-    const diasActualizados =
-      recurrencia.diasSemana.includes(dia)
-        ? recurrencia.diasSemana.filter(
-            (d) => d !== dia
-          )
-        : [...recurrencia.diasSemana, dia].sort();
-
-    onChange?.({
-      ...recurrencia,
-      diasSemana: diasActualizados,
-    });
-  };
-
-  const cambiarConfiguracion = (campo, valor) => {
-    actualizarConfiguracion({
-      [campo]: valor,
-    });
-
-    onChange?.({
-      ...recurrencia,
-      configuracion: {
-        ...recurrencia.configuracion,
-        [campo]: valor,
-      },
-    });
   };
 
   return (
     <div className="recurrencia-form">
-
-      {/* Tipo */}
-      <div className="recurrencia-field">
-        <label>
-          Recurrencia
-        </label>
-
-        <select
-          className="v2-select"
-          value={recurrencia.tipo}
-          onChange={(e) =>
-            cambiarTipo(e.target.value)
-          }
-        >
-          <option value="no-repetir">
-            No repetir
-          </option>
-
-          <option value="diaria">
-            Diariamente
-          </option>
-
-          <option value="semanal">
-            Semanalmente
-          </option>
-
-          <option value="cada-x">
-            Cada X días
-          </option>
-        </select>
-      </div>
-
-      {/* DIARIA */}
-      {recurrencia.tipo === "diaria" && (
-        <div className="recurrencia-config">
-
-          <div className="recurrencia-field">
-            <label>
-              Repetir cada
-            </label>
-
-            <div className="recurrencia-input-group">
-              <input
-                type="number"
-                min="1"
-                className="v2-search"
-                value={recurrencia.frecuencia}
-                onChange={cambiarFrecuencia}
-              />
-
-              <span>
-                día
-                {recurrencia.frecuencia !== 1
-                  ? "s"
-                  : ""}
-              </span>
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* SEMANAL */}
-      {recurrencia.tipo === "semanal" && (
-        <div className="recurrencia-config">
-
-          <div className="recurrencia-field">
-            <label>
-              Repetir cada
-            </label>
-
-            <div className="recurrencia-input-group">
-              <input
-                type="number"
-                min="1"
-                className="v2-search"
-                value={recurrencia.frecuencia}
-                onChange={cambiarFrecuencia}
-              />
-
-              <span>
-                semana
-                {recurrencia.frecuencia !== 1
-                  ? "s"
-                  : ""}
-              </span>
-            </div>
-          </div>
-
-          <div className="recurrencia-field">
-            <label>
-              Repetir los días
-            </label>
-
-            <div className="recurrencia-dias">
-
-              {DIAS_SEMANA.map((dia) => {
-                const seleccionado =
-                  recurrencia.diasSemana.includes(
-                    dia.valor
-                  );
-
-                return (
-                  <button
-                    key={dia.valor}
-                    type="button"
-                    className={`recurrencia-dia ${
-                      seleccionado
-                        ? "seleccionado"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      cambiarDia(dia.valor)
-                    }
-                  >
-                    {dia.nombre}
-                  </button>
-                );
-              })}
-
-            </div>
-
-            {recurrencia.diasSemana.length === 0 && (
-              <span className="recurrencia-hint">
-                Seleccioná al menos un día.
-              </span>
-            )}
-          </div>
-
-        </div>
-      )}
-
-      {/* CADA X */}
-      {recurrencia.tipo === "cada-x" && (
-        <div className="recurrencia-config">
-
-          <div className="recurrencia-field">
-            <label>
-              Repetir cada
-            </label>
-
-            <div className="recurrencia-input-group">
-              <input
-                type="number"
-                min="1"
-                className="v2-search"
-                value={recurrencia.frecuencia}
-                onChange={cambiarFrecuencia}
-              />
-
-              <span>
-                días
-              </span>
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* CONFIGURACIÓN OPCIONAL */}
-      {recurrencia.tipo !== "no-repetir" && (
-        <div className="recurrencia-field">
-          <label>
-            Finalización de recurrencia
+      {/* CHECKBOX (Solo en creación) */}
+      {!isEditing && (
+        <div className="recurrencia-field" style={{ flexDirection: "row", alignItems: "center", gap: "8px" }}>
+          <input
+            type="checkbox"
+            id="checkbox-recurrencia"
+            checked={esRecurrente}
+            onChange={(e) => onToggleRecurrencia(e.target.checked)}
+            style={{ width: "auto", cursor: "pointer", accentColor: "var(--blue-800)" }}
+          />
+          <label htmlFor="checkbox-recurrencia" style={{ cursor: "pointer", margin: 0 }}>
+            Evento Recurrente
           </label>
-
-          <select
-            className="v2-select"
-            value={
-              recurrencia.configuracion
-                ?.tipoFin || "sin-fecha"
-            }
-            onChange={(e) =>
-              cambiarConfiguracion(
-                "tipoFin",
-                e.target.value
-              )
-            }
-          >
-            <option value="sin-fecha">
-              Sin fecha de finalización
-            </option>
-
-            <option value="fecha">
-              Finalizar en una fecha
-            </option>
-
-            <option value="cantidad">
-              Después de cierta cantidad
-            </option>
-          </select>
         </div>
       )}
 
-      {/* FECHA FIN */}
-      {recurrencia.tipo !== "no-repetir" &&
-        recurrencia.configuracion?.tipoFin ===
-          "fecha" && (
+      {/* SELECTOR Y CONFIGURACIÓN */}
+      {esRecurrente && (
+        <div className="recurrencia-config">
           <div className="recurrencia-field">
-            <label>
-              Fecha de finalización
-            </label>
-
-            <input
-              type="date"
-              className="v2-search"
-              value={
-                recurrencia.configuracion
-                  ?.fechaFin || ""
-              }
-              onChange={(e) =>
-                cambiarConfiguracion(
-                  "fechaFin",
-                  e.target.value
-                )
-              }
-            />
+            <label>Patrón de repetición</label>
+            <select
+              className="v2-select"
+              value={selectValue}
+              onChange={(e) => setSelectValue(e.target.value)}
+            >
+              <option value={PATRONES_PREDEFINIDOS.DAILY}>Todos los días</option>
+              <option value={PATRONES_PREDEFINIDOS.WEEKLY_MO}>Cada semana, el lunes</option>
+              <option value={PATRONES_PREDEFINIDOS.MONTHLY_LAST_MO}>Todos los meses, el último lunes</option>
+              <option value={PATRONES_PREDEFINIDOS.YEARLY_AUG_31}>Anualmente, el 31 de agosto</option>
+              <option value={PATRONES_PREDEFINIDOS.WEEKDAYS}>Todos los días hábiles (Lun-Vie)</option>
+              <option value="CUSTOM">Personalizado…</option>
+            </select>
           </div>
-        )}
 
-      {/* CANTIDAD */}
-      {recurrencia.tipo !== "no-repetir" &&
-        recurrencia.configuracion?.tipoFin ===
-          "cantidad" && (
-          <div className="recurrencia-field">
-            <label>
-              Cantidad de repeticiones
-            </label>
+          {/* MÓDULO PERSONALIZADO AVANZADO */}
+          {selectValue === "CUSTOM" && (
+            <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--gray-200)" }}>
+              
+              {/* FRECUENCIA E INTERVALO */}
+              <div className="v2-grid-2">
+                <div className="recurrencia-field">
+                  <label>Frecuencia</label>
+                  <select className="v2-select" value={customFreq} onChange={(e) => setCustomFreq(e.target.value)}>
+                    <option value="DAILY">Diaria</option>
+                    <option value="WEEKLY">Semanal</option>
+                    <option value="MONTHLY">Mensual</option>
+                    <option value="YEARLY">Anual</option>
+                  </select>
+                </div>
+                <div className="recurrencia-field">
+                  <label>Intervalo (repetir cada...)</label>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      type="number"
+                      min="1"
+                      className="v2-search"
+                      value={customInterval}
+                      onChange={(e) => setCustomInterval(Math.max(1, Number(e.target.value)))}
+                      style={{ width: "80px" }}
+                    />
+                    <span style={{ fontSize: "13px", color: "var(--gray-600)" }}>
+                      {customFreq === "DAILY" ? "día(s)" : customFreq === "WEEKLY" ? "semana(s)" : customFreq === "MONTHLY" ? "mes(es)" : "año(s)"}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-            <input
-              type="number"
-              min="1"
-              className="v2-search"
-              value={
-                recurrencia.configuracion
-                  ?.cantidad || 1
-              }
-              onChange={(e) =>
-                cambiarConfiguracion(
-                  "cantidad",
-                  Math.max(
-                    1,
-                    Number(e.target.value) || 1
-                  )
-                )
-              }
-            />
-          </div>
-        )}
+              {/* DÍAS DE LA SEMANA (Solo si es semanal) */}
+              {customFreq === "WEEKLY" && (
+                <div className="recurrencia-field" style={{ marginTop: "16px" }}>
+                  <label>Repetir los días</label>
+                  <div className="recurrencia-dias">
+                    {[
+                      { val: "MO", lbl: "L" }, { val: "TU", lbl: "M" }, { val: "WE", lbl: "X" },
+                      { val: "TH", lbl: "J" }, { val: "FR", lbl: "V" }, { val: "SA", lbl: "S" }, { val: "SU", lbl: "D" }
+                    ].map((dia) => (
+                      <button
+                        key={dia.val}
+                        type="button"
+                        className={`recurrencia-dia ${customDias.includes(dia.val) ? "seleccionado" : ""}`}
+                        onClick={() => toggleDiaPersonalizado(dia.val)}
+                      >
+                        {dia.lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
+              {/* REGLAS DE FINALIZACIÓN */}
+              <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px dashed var(--gray-200)" }}>
+                <div className="recurrencia-field">
+                  <label>Termina</label>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "4px" }}>
+                    
+                    {/* Opción 1: Nunca */}
+                    <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: "normal" }}>
+                      <input 
+                        type="radio" 
+                        name="endType" 
+                        value="never" 
+                        checked={endType === "never"} 
+                        onChange={() => setEndType("never")} 
+                        style={{ accentColor: "var(--blue-800)" }}
+                      />
+                      Nunca
+                    </label>
+
+                    {/* Opción 2: El (Fecha específica) */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: "normal" }}>
+                        <input 
+                          type="radio" 
+                          name="endType" 
+                          value="until" 
+                          checked={endType === "until"} 
+                          onChange={() => setEndType("until")} 
+                          style={{ accentColor: "var(--blue-800)" }}
+                        />
+                        El
+                      </label>
+                      <input
+                        type="date"
+                        className="v2-search"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        disabled={endType !== "until"}
+                        style={{ opacity: endType !== "until" ? 0.5 : 1, padding: "4px 8px" }}
+                      />
+                    </div>
+
+                    {/* Opción 3: Después de X ocurrencias */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: "normal" }}>
+                        <input 
+                          type="radio" 
+                          name="endType" 
+                          value="count" 
+                          checked={endType === "count"} 
+                          onChange={() => setEndType("count")} 
+                          style={{ accentColor: "var(--blue-800)" }}
+                        />
+                        Después de
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        className="v2-search"
+                        value={endCount}
+                        onChange={(e) => setEndCount(Math.max(1, Number(e.target.value)))}
+                        disabled={endType !== "count"}
+                        style={{ width: "60px", opacity: endType !== "count" ? 0.5 : 1, padding: "4px 8px" }}
+                      />
+                      <span style={{ fontSize: "13px", color: "var(--gray-600)", opacity: endType !== "count" ? 0.5 : 1 }}>ocurrencias</span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

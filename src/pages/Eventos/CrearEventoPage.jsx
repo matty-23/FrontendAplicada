@@ -70,19 +70,29 @@ export default function CrearEventoPage() {
     });
 
     if (eventoSeleccionado.ocurrencias && eventoSeleccionado.ocurrencias.length > 0) {
-      const ocurrenciasCargadas = eventoSeleccionado.ocurrencias.map((oc) => ({
-        id: oc.id || oc.id_ocurrencia,
-        idLocal: oc.id || oc.id_ocurrencia || generarIdLocal(),
-        fechaInicio: formatParaInputFecha(oc.fechaInicio || oc.fecha_inicio),
-        fechaFinalizacion: formatParaInputFecha(oc.fechaFinalizacion || oc.fecha_finalizacion),
-        lugar: oc.lugar || "",
-        cantidadPersonas: oc.cantidadPersonas ?? oc.cantidad_personas ?? 0,
-        id_encargado: typeof oc.id_encargado === "string" ? oc.id_encargado : oc.encargado?.id || "",
-        participantes: (oc.participantes || []).map((p) => typeof p === "string" ? p : p?.id).filter(Boolean),
-        participantesSeleccionados: oc.participantes || [],
-        comentarios: oc.comentarios || [],
-        personalizado: oc.personalizado || {},
-      }));
+      const ocurrenciasCargadas = eventoSeleccionado.ocurrencias.map((oc) => {
+        // Formateamos las fechas al formato local YYYY-MM-DDTHH:mm
+        const fInicio = formatParaInputFecha(oc.fechaInicio || oc.fecha_inicio);
+        const fFin = formatParaInputFecha(oc.fechaFinalizacion || oc.fecha_finalizacion);
+        
+        // Detectamos si abarca desde las 00:00 hasta las 23:59
+        const esTodoElDia = fInicio.includes("T00:00") && (fFin.includes("T23:59") || !fFin);
+
+        return {
+          id: oc.id || oc.id_ocurrencia,
+          idLocal: oc.id || oc.id_ocurrencia || generarIdLocal(),
+          fechaInicio: fInicio,
+          fechaFinalizacion: fFin,
+          allDay: esTodoElDia, // <-- Asignamos la propiedad calculada
+          lugar: oc.lugar || "",
+          cantidadPersonas: oc.cantidadPersonas ?? oc.cantidad_personas ?? 0,
+          id_encargado: typeof oc.id_encargado === "string" ? oc.id_encargado : oc.encargado?.id || "",
+          participantes: (oc.participantes || []).map((p) => typeof p === "string" ? p : p?.id).filter(Boolean),
+          participantesSeleccionados: oc.participantes || [],
+          comentarios: oc.comentarios || [],
+          personalizado: oc.personalizado || {},
+        };
+      });
       setOcurrencias(ocurrenciasCargadas);
     }
   }, [eventoSeleccionado, isEditing, id,]);
