@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/DashboardLayout";
 import Card from "../../components/Card";
 import { useEvento } from "../../hooks/Evento/useEvento";
+import { rightActions } from "../../utils/rightActions";
 
 export default function EventoDetallePage() {
   const { id } = useParams();
@@ -53,22 +54,11 @@ export default function EventoDetallePage() {
     estadoTexto = "En revisión";
   }
 
-  const rightActions = (
-    <div style={{ display: "flex", gap: "10px" }}>
-      <button className="v2-btn-secondary" onClick={() => nav("/admin/eventos")}>
-        <i className="fa-solid fa-arrow-left"></i> Volver
-      </button>
-      <button className="v2-btn-ghost" style={{ color: "var(--gray-600)", borderColor: "var(--gray-300)" }}>
-        <i className="fa-solid fa-pen"></i> Editar
-      </button>
-    </div>
-  );
-
   return (
     <DashboardLayout 
       breadcrumb="Gestión / Eventos / Detalle" 
       title={evento.titulo || "Detalle del Evento"} 
-      rightActions={rightActions}
+      rightActions={rightActions("Editar","/admin/eventos")}
     >
       <div className="v2-grid-6040">
         
