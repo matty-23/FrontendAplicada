@@ -187,7 +187,7 @@ export default function Calendario({events = [],onEventoModificado}) {
           eventResize={ handleEventResize}
           datesSet={handleDatesSet }
 
-          height="auto"
+          height="100%"
           editable={true}
           droppable={true}
           eventStartEditable={true }

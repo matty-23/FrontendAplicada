@@ -1,3 +1,4 @@
+// components/itemsEventos/EventoForm.jsx
 import Card from "../Card";
 import EventoGeneralForm from "./EventoGeneralForm";
 import OcurrenciasList from "./OcurrenciasList";
@@ -9,8 +10,13 @@ export default function EventoForm({
   onOcurrenciaChange,
   onAgregarOcurrencia,
   onEliminarOcurrencia,
-  onSepararOcurrencia, // Añadido opcionalmente por si se pasa en el futuro
-  soloLectura = false, // Añadido valor por defecto para evitar errores de "undefined"
+  onSepararOcurrencia,
+  soloLectura = false,
+  isEditing,
+  esRecurrente,
+  recurrenciaRRule,
+  onToggleRecurrencia,
+  onChangeRRule
 }) {
   return (
     <div className="crear-evento-form-content">
@@ -31,6 +37,12 @@ export default function EventoForm({
           onEliminar={onEliminarOcurrencia}
           onSeparar={onSepararOcurrencia}
           soloLectura={soloLectura}
+          /* Pasamos las props hacia abajo */
+          isEditing={isEditing}
+          esRecurrente={esRecurrente}
+          recurrenciaRRule={recurrenciaRRule}
+          onToggleRecurrencia={onToggleRecurrencia}
+          onChangeRRule={onChangeRRule}
         />
       </Card>
     </div>

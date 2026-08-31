@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useEventoForm } from "../../hooks/Evento/useEventoForm";
 
 import EventoGeneralForm from "./EventoGeneralForm";
-import RecurrenciaForm from "./RecurrenciaForm";
+import RecurrenciaForm from "./Recurrencia/RecurrenciaForm";
 import OcurrenciasList from "./OcurrenciasList";
 
 import "./CrearEventoModal.css";
@@ -246,9 +246,7 @@ export default function CrearEventoModal({
 
           <EventoGeneralForm
             evento={evento}
-            onChange={
-              actualizarCampoEvento
-            }
+            onChange={actualizarCampoEvento}
           />
 
           {/* OCURRENCIAS (bloques de fecha: independientes de la
@@ -257,27 +255,10 @@ export default function CrearEventoModal({
           <OcurrenciasList
             ocurrencias={ocurrencias}
             valoresGenerales={evento}
-
-            onChange={
-              actualizarOcurrencia
-            }
-
-            onAgregar={
-              agregarOcurrencia
-            }
-
-            onEliminar={
-              eliminarOcurrencia
-            }
-
-            onSeparar={
-              separarOcurrencia
-            }
-          />
-
-          {/* RECURRENCIA */}
-
-          <RecurrenciaForm
+            onChange={actualizarOcurrencia}
+            onAgregar={agregarOcurrencia}
+            onEliminar={eliminarOcurrencia}
+            onSeparar={separarOcurrencia}
             isEditing={isEditing}
             esRecurrente={esRecurrente}
             recurrenciaRRule={recurrenciaRRule}

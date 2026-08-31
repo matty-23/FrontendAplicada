@@ -1,8 +1,3 @@
-
-/* =========================================================
-   OCURRENCIA CARD
-   ========================================================= */
-
 .ocurrencia-card {
   width: 100%;
   border: 1px solid #e5e7eb;
@@ -10,36 +5,37 @@
   background: #fff;
   margin-bottom: 12px;
   overflow: hidden;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ocurrencia-card:hover {
   border-color: #d1d5db;
 }
 
+.ocurrencia-card.expanded {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.ocurrencia-card.solo-lectura {
+  background: #f8fafc;
+  cursor: default;
+}
 
 /* =========================================================
-   HEADER / RESUMEN
+   2. HEADER / RESUMEN
    ========================================================= */
-
 .ocurrencia-card-header {
   width: 100%;
   min-height: 72px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 14px 16px;
-
   background: #fff;
   border: none;
-
   cursor: pointer;
   text-align: left;
-
   transition: background 0.2s ease;
 }
 
@@ -47,9 +43,15 @@
   background: #f9fafb;
 }
 
+.ocurrencia-card.solo-lectura .ocurrencia-card-header {
+  cursor: default;
+}
+
+.ocurrencia-card.solo-lectura .ocurrencia-card-header:hover {
+  background: #fff;
+}
 
 /* Parte izquierda */
-
 .ocurrencia-card-header-main {
   display: flex;
   align-items: center;
@@ -57,33 +59,23 @@
   min-width: 0;
 }
 
-
 /* Icono */
-
 .ocurrencia-card-icon {
   width: 38px;
   height: 38px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   border-radius: 9px;
-
-  background: #f3f4f6;
-  color: #0d0d0d;
-
+  background: #eff6ff;
+  color: #2563eb; /* Azul unificado para el icono principal */
   font-size: 15px;
 }
 
-
 /* Información */
-
 .ocurrencia-card-summary {
   min-width: 0;
-
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -93,7 +85,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   font-size: 14px;
   font-weight: 600;
   color: #111827;
@@ -102,7 +93,6 @@
 .ocurrencia-card-date {
   font-size: 13px;
   color: #6b7280;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -111,44 +101,33 @@
 .ocurrencia-card-place {
   font-size: 12px;
   color: #9ca3af;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-
 /* =========================================================
-   ACCIONES DEL HEADER
+   3. ACCIONES DEL HEADER Y CHEVRON
    ========================================================= */
-
 .ocurrencia-card-header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-
   flex-shrink: 0;
 }
 
 .ocurrencia-card-action {
   width: 32px;
   height: 32px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 7px;
-
   background: transparent;
   color: #6b7280;
-
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .ocurrencia-card-action:hover {
@@ -156,45 +135,33 @@
   color: #111827;
 }
 
-
-/* Eliminar */
-
 .ocurrencia-card-action.delete:hover {
   background: #fef2f2;
   color: #dc2626;
 }
 
-
-/* Flecha */
-
+/* Flecha (Chevron) */
 .ocurrencia-card-chevron {
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
 }
 
 .ocurrencia-card.expanded .ocurrencia-card-chevron {
   transform: rotate(180deg);
 }
 
-
 /* =========================================================
-   BADGE PERSONALIZADO
+   4. BADGES
    ========================================================= */
-
 .ocurrencia-card-custom-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-
   padding: 3px 7px;
-
   border-radius: 999px;
-
   background: #fff7ed;
   color: #ea580c;
-
   font-size: 10px;
   font-weight: 600;
-
   white-space: nowrap;
 }
 
@@ -202,17 +169,13 @@
   font-size: 9px;
 }
 
-
 /* =========================================================
-   CONTENIDO EXPANDIDO
+   5. CONTENIDO EXPANDIDO Y ANIMACIÓN
    ========================================================= */
-
 .ocurrencia-card-content {
   padding: 0 16px 18px;
-
   border-top: 1px solid #f0f0f0;
-
-  animation: ocurrenciaCardOpen 0.18s ease;
+  animation: ocurrenciaCardOpen 0.2s ease;
 }
 
 @keyframes ocurrenciaCardOpen {
@@ -220,31 +183,24 @@
     opacity: 0;
     transform: translateY(-4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-
 /* =========================================================
-   GRID DE CAMPOS
+   6. GRID DE CAMPOS
    ========================================================= */
-
 .ocurrencia-card-fields {
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
   gap: 16px;
-
   padding-top: 18px;
 }
 
 .ocurrencia-card-field {
   min-width: 0;
-
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -254,25 +210,17 @@
   grid-column: 1 / -1;
 }
 
-
 /* Labels */
-
 .ocurrencia-card-field label {
   display: flex;
   align-items: center;
   gap: 6px;
-
   font-size: 12px;
   font-weight: 600;
-
   color: #374151;
 }
 
-
-/* =========================================================
-   CAMPOS PERSONALIZADOS
-   ========================================================= */
-
+/* Campos personalizados */
 .ocurrencia-card-field.custom {
   position: relative;
 }
@@ -283,39 +231,81 @@
 
 .ocurrencia-card-field.custom::before {
   content: "";
-
   position: absolute;
-
   left: -9px;
   top: 0;
   bottom: 0;
-
   width: 3px;
-
   border-radius: 3px;
-
   background: #f97316;
 }
 
+/* =========================================================
+   7. CAMPOS ESPECÍFICOS (Allday & Separar)
+   ========================================================= */
+/* Checkbox de "Todo el día" */
+.ocurrencia-card-allday {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.ocurrencia-allday-checkbox {
+  width: auto;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.ocurrencia-allday-label {
+  cursor: pointer;
+  margin: 0;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Separar Rango */
+.ocurrencia-card-separar-container {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ocurrencia-card-separar-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.ocurrencia-card-separar-btn {
+  height: 32px;
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+.ocurrencia-card-separar-btn i {
+  margin-right: 6px;
+}
 
 /* =========================================================
-   BOTÓN RESTAURAR
+   8. RESTAURAR Y COMENTARIOS
    ========================================================= */
-
+/* Botón Restaurar */
 .ocurrencia-card-restore {
   margin-top: 18px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
-
   padding: 10px 12px;
-
   border: 1px solid #fed7aa;
   border-radius: 8px;
-
   background: #fff7ed;
 }
 
@@ -323,7 +313,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   font-size: 12px;
   color: #9a3412;
 }
@@ -336,15 +325,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
   border: none;
   background: transparent;
-
   color: #ea580c;
-
   font-size: 12px;
   font-weight: 600;
-
   cursor: pointer;
 }
 
@@ -352,16 +337,10 @@
   text-decoration: underline;
 }
 
-
-/* =========================================================
-   COMENTARIOS
-   ========================================================= */
-
+/* Comentarios */
 .ocurrencia-card-comments {
   margin-top: 18px;
-
   padding-top: 16px;
-
   border-top: 1px solid #f0f0f0;
 }
 
@@ -369,7 +348,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 10px;
 }
 
@@ -377,52 +355,35 @@
   display: flex;
   align-items: center;
   gap: 7px;
-
   font-size: 12px;
   font-weight: 600;
-
   color: #374151;
 }
 
 .ocurrencia-card-comments-count {
   min-width: 20px;
   height: 20px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   padding: 0 6px;
-
   border-radius: 999px;
-
   background: #f3f4f6;
-
   font-size: 10px;
   font-weight: 600;
-
   color: #6b7280;
 }
 
-
 /* =========================================================
-   FOOTER DEL CARD
+   9. FOOTER E INPUTS
    ========================================================= */
-
 .ocurrencia-card-footer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-
   gap: 8px;
-
   margin-top: 18px;
 }
-
-
-/* =========================================================
-   INPUTS
-   ========================================================= */
 
 .ocurrencia-card input,
 .ocurrencia-card select,
@@ -431,33 +392,43 @@
   box-sizing: border-box;
 }
 
-
 /* =========================================================
-   RESPONSIVE
+   10. RESPONSIVE
    ========================================================= */
-
 @media (max-width: 700px) {
   .ocurrencia-card-fields {
     grid-template-columns: 1fr;
   }
-
+  
   .ocurrencia-card-field-full {
     grid-column: auto;
   }
-
+  
   .ocurrencia-card-header {
     padding: 12px;
+    min-height: 64px;
   }
-
+  
   .ocurrencia-card-content {
     padding: 0 12px 16px;
   }
-
+  
   .ocurrencia-card-header-actions {
     gap: 2px;
   }
-
+  
   .ocurrencia-card-date {
     white-space: normal;
+  }
+
+  .ocurrencia-card-separar-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .ocurrencia-card-restore {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
