@@ -14,7 +14,7 @@ import CalendarioToolbar from "./CalendarioToolbar";
 
 import "./Calendario.css";
 
-export default function Calendario({events = [],onEventoModificado}) {
+export default function Calendario({ events = [], onEventoModificado }) {
 
   // ==========================================
   // CALENDARIO
@@ -59,10 +59,11 @@ export default function Calendario({events = [],onEventoModificado}) {
   const {
     handleEventDrop,
     handleEventResize,
+    promptDragDrop,
+    procesarDecision,
+    cancelarModificacion
   } = useCalendarioDragDrop({
     actualizarOcurrencia,
-    eventos,
-    actualizarEvento,
     onSuccess: onEventoModificado
   });
 
@@ -155,14 +156,49 @@ export default function Calendario({events = [],onEventoModificado}) {
           cambiarVista
         }
       />
+      {promptDragDrop.activo && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: "420px", padding: "24px", height: "auto" }}>
+            <h3 style={{ marginTop: 0, color: "var(--gray-900)" }}>¿Cómo quieres aplicar este cambio de fecha/hora?</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "24px 0" }}>
+              <button
+                type="button"
+                className="v2-btn-secondary"
+                style={{ justifyContent: "flex-start", padding: "12px", height: "auto" }}
+                onClick={() => procesarDecision("SOLO_ESTE")}
+              >
+                <i className="fa-regular fa-calendar-check" style={{ fontSize: "16px", color: "var(--blue-500)" }}></i>
+                <div style={{ textAlign: "left", marginLeft: "8px" }}>
+                  <strong>Solo este evento</strong>
+                  <div style={{ fontSize: "11px", color: "var(--gray-500)" }}>Modifica únicamente esta fecha.</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className="v2-btn-secondary"
+                style={{ justifyContent: "flex-start", padding: "12px", height: "auto" }}
+                onClick={() => procesarDecision("TODOS")}
+              >
+                <i className="fa-solid fa-layer-group" style={{ fontSize: "16px", color: "var(--blue-500)" }}></i>
+                <div style={{ textAlign: "left", marginLeft: "8px" }}>
+                  <strong>Todos los eventos de la serie</strong>
+                  <div style={{ fontSize: "11px", color: "var(--gray-500)" }}>Se desplazará toda la recurrencia.</div>
+                </div>
+              </button>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button type="button" className="v2-btn-ghost" onClick={cancelarModificacion}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CALENDARIO */}
-
-      <div
-        className="calendario-wrapper"
-        onWheel={handleWheel}
-      >
-
+      <div className="calendario-wrapper" onWheel={handleWheel}>
         <FullCalendar
 
           ref={calendarRef}
@@ -172,7 +208,9 @@ export default function Calendario({events = [],onEventoModificado}) {
             timeGridPlugin,
             interactionPlugin,
           ]}
-
+          eventStartEditable={true}
+          eventDurationEditable={true}
+          displayEventTime={false}
           initialView={vistaActual}
           headerToolbar={false}
           events={events}
@@ -183,21 +221,21 @@ export default function Calendario({events = [],onEventoModificado}) {
           dateClick={handleDateClick}
           select={handleSelect}
           eventClick={handleEventClick}
-          eventDrop={ handleEventDrop}
-          eventResize={ handleEventResize}
-          datesSet={handleDatesSet }
+          eventDrop={handleEventDrop}
+          eventResize={handleEventResize}
+          datesSet={handleDatesSet}
 
           height="100%"
           editable={true}
           droppable={true}
-          eventStartEditable={true }
-          eventDurationEditable={true }
-          displayEventTime={ false}
+          forceEventDuration={true}
+          defaultTimedEventDuration="01:00:00"
+
           slotDuration="00:15:00"
           slotLabelInterval="01:00"
           snapDuration="00:15:00"
           eventDisplay="block"
-          displayEventEnd={ false }
+          displayEventEnd={false}
           eventTimeFormat={{
             hour: "2-digit",
             minute: "2-digit",
@@ -212,10 +250,10 @@ export default function Calendario({events = [],onEventoModificado}) {
 
       <CrearEventoModal
 
-        isOpen={ modalAbierto}
-        onClose={ cerrarModal }
-        rangoSeleccionado={ rangoSeleccionado}
-        eventoSeleccionado={ eventoSeleccionado}
+        isOpen={modalAbierto}
+        onClose={cerrarModal}
+        rangoSeleccionado={rangoSeleccionado}
+        eventoSeleccionado={eventoSeleccionado}
         modo={modoModal}
         onSuccess={onEventoModificado}
 

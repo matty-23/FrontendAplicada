@@ -5,65 +5,63 @@ import "./OcurrenciasList.css";
 export default function OcurrenciasList({ ocurrencias, onChange, onEliminar, onAgregar, onSeparar, soloLectura = false,
   isEditing, esRecurrente, recurrenciaRRule, onToggleRecurrencia, onChangeRRule, }) {
 
-  const ocurrenciasAMostrar = esRecurrente
-    ? [ocurrencias[0]] // Obligamos a que sea 1 sola
-    : [...ocurrencias].sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio));
+  let ocurrenciasAMostrar = esRecurrente
+    ? ocurrencias.filter(o => o.tipo !== "EXCEPCION" && o.tipo !== "MODIFICADA")
+    : [...ocurrencias].sort((a, b) => new Date(a.fechaInicio || 0) - new Date(b.fechaInicio || 0));
+  if (esRecurrente && ocurrenciasAMostrar.length === 0 && ocurrencias.length > 0) {
+    ocurrenciasAMostrar = [ocurrencias[0]];
+  }
 
+  const isYearly = recurrenciaRRule?.includes("FREQ=YEARLY");
   return (
     <div className="ocurrencias-list">
-      <div className="ocurrencias-list-header">
-        <div>
-          <h3>Programación</h3>
-          <span>
-            {ocurrenciasAMostrar.length} {ocurrenciasAMostrar.length === 1 ? "día" : "días"}
-          </span>
-        </div>
-      </div>
       {!soloLectura && (
         <div className="ocurrencias-list-recurrencia">
-          <h4 className="ocurrencias-list-recurrencia-title">
-            <i className="fa-solid fa-rotate" />
-            Regla de Repetición
-          </h4>
-
           <RecurrenciaForm
             isEditing={isEditing}
             esRecurrente={esRecurrente}
-            recurrenciaRRule={recurrenciaRRule}
+            initialRule={recurrenciaRRule}
             onToggleRecurrencia={onToggleRecurrencia}
             onChangeRRule={onChangeRRule}
-            fechaInicio={ocurrenciasAMostrar[0]?.fechaInicio}
           />
         </div>
       )}
+
+      <div className="ocurrencias-list-header" style={{ marginTop: esRecurrente ? "24px" : "0" }}>
+        <div>
+          <h3>{esRecurrente ? "Horarios y Detalles" : "Programación"}</h3>
+          <span>
+            {ocurrenciasAMostrar.length} {ocurrenciasAMostrar.length === 1 ? (esRecurrente ? "horario" : "día") : (esRecurrente ? "horarios" : "días")}
+          </span>
+        </div>
+      </div>
+
       <div className="ocurrencias-list-items">
         {ocurrenciasAMostrar.map((ocurrencia, index) => (
           <OcurrenciaCard
-            key={ocurrencia.idLocal}
+            key={ocurrencia.idLocal || index}
             ocurrencia={ocurrencia}
             index={index}
-            tituloAlternativo={esRecurrente ? "Datos base de la repetición" : undefined}
             onChange={onChange}
-            onEliminar={esRecurrente ? () => { } : onEliminar}
+            onEliminar={onEliminar}
             onSeparar={onSeparar}
             soloLectura={soloLectura}
             esRecurrente={esRecurrente}
+            isYearly={isYearly}
           />
         ))}
       </div>
 
-      {!soloLectura && !esRecurrente && (
+      {!soloLectura && (
         <button
           type="button"
           className="crear-evento-add-ocurrencia v2-btn-ghost"
           onClick={onAgregar}
         >
           <i className="fa-solid fa-plus" />
-          Agregar fecha aislada
+          {esRecurrente ? "Agregar otro horario" : "Agregar fecha aislada"}
         </button>
       )}
-
-
     </div>
   );
 }

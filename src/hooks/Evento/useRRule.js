@@ -1,107 +1,84 @@
-import { useState, useEffect, useMemo } from "react";
-import { RRule } from "rrule";
+import { useState, useEffect, useCallback, useRef } from "react";
 
-export function useRRule(esRecurrente, onChangeRRule, fechaInicio) {
-  // Generador dinámico idéntico a Google Calendar
-  const { patrones, labels } = useMemo(() => {
-    const defaultData = { patrones: {}, labels: {} };
-    if (!fechaInicio) return defaultData;
-
-    const d = new Date(fechaInicio);
-    if (isNaN(d.getTime())) return defaultData;
-
-    // Obtener datos del día
-    const dayNames = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
-    const dayNamesEs = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-    
-    const dayIdx = d.getDay();
-    const dayStr = dayNames[dayIdx];
-    const date = d.getDate();
-    const nth = Math.ceil(date / 7); // Calcula si es el 1er, 2do, 3er día del mes
-
-    return {
-      patrones: {
-        DAILY: "FREQ=DAILY",
-        WEEKLY: `FREQ=WEEKLY;BYDAY=${dayStr}`,
-        MONTHLY: `FREQ=MONTHLY;BYDAY=${nth}${dayStr}`,
-        YEARLY: `FREQ=YEARLY;BYMONTH=${d.getMonth() + 1};BYMONTHDAY=${date}`,
-        WEEKDAYS: "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR",
-        CUSTOM: "CUSTOM",
-      },
-      labels: {
-        DAILY: "Todos los días",
-        WEEKLY: `Cada semana, el ${dayNamesEs[dayIdx]}`,
-        MONTHLY: `Mensual, el ${nth}º ${dayNamesEs[dayIdx]}`,
-        YEARLY: `Anual, el ${date} de ${d.toLocaleString('es', { month: 'long' })}`,
-        WEEKDAYS: "Todos los días hábiles (Lun-Vie)",
-        CUSTOM: "Personalizado...",
-      }
-    };
-  }, [fechaInicio]);
-
-  const [selectValue, setSelectValue] = useState("FREQ=DAILY");
+export function useRRule(esRecurrente, initialRule, onChangeRRule) {
+  const [tipo, setTipo] = useState("DAILY");
+  const [diasSemana, setDiasSemana] = useState([]);
+  const [diasMes, setDiasMes] = useState([]);
+  const [intervalo, setIntervalo] = useState(1);
   
-  // Variables Custom (mantén las que ya tenías)
-  const [customFreq, setCustomFreq] = useState("WEEKLY");
-  const [customInterval, setCustomInterval] = useState(1);
-  const [customDias, setCustomDias] = useState([]);
-  const [endType, setEndType] = useState("never");
-  const [endCount, setEndCount] = useState(10);
-  const [endDate, setEndDate] = useState("");
+  // Ref para evitar loops: Si estamos leyendo del backend, no emitimos hacia arriba
+  const isParsing = useRef(false);
 
-  // Sincronización de opciones predefinidas
+  // 1. LEER LA REGLA: Cuando recibimos initialRule (del backend o al activar el toggle)
   useEffect(() => {
-    if (selectValue !== "CUSTOM" && esRecurrente) {
-      onChangeRRule(selectValue);
-    }
-  }, [selectValue, esRecurrente, onChangeRRule]);
+    if (!initialRule || initialRule === "unico") return;
 
-  // Generación dinámica de la regla personalizada
+    isParsing.current = true; // Bloqueamos emisión
+
+    // LIMPIAMOS EL PREFIJO PARA PARSEAR CORRECTAMENTE
+    const cleanRule = initialRule.replace("RRULE:", "");
+
+    const ruleObj = {};
+    cleanRule.split(";").forEach((p) => {
+      const [k, v] = p.split("=");
+      if (k && v) ruleObj[k] = v;
+    });
+
+    if (ruleObj.FREQ === "DAILY" && parseInt(ruleObj.INTERVAL) > 1) {
+      setTipo("CUSTOM");
+      setIntervalo(parseInt(ruleObj.INTERVAL));
+    } else {
+      setTipo(ruleObj.FREQ || "DAILY");
+    }
+
+    if (ruleObj.BYDAY) setDiasSemana(ruleObj.BYDAY.split(","));
+    if (ruleObj.BYMONTHDAY) setDiasMes(ruleObj.BYMONTHDAY.split(",").map(Number));
+
+    // Liberamos el bloqueo
+    setTimeout(() => { isParsing.current = false; }, 0);
+  }, [initialRule]);
+
+  // 2. GENERAR LA REGLA: A partir de los clics del usuario en la interfaz
+  const generarRRule = useCallback(() => {
+    if (!esRecurrente) return "unico";
+
+    let rule = `FREQ=${tipo === "CUSTOM" ? "DAILY" : tipo}`;
+    
+    if (tipo === "CUSTOM" && intervalo > 1) {
+      rule += `;INTERVAL=${intervalo}`;
+    }
+    if (tipo === "WEEKLY" && diasSemana.length > 0) {
+      rule += `;BYDAY=${diasSemana.join(",")}`;
+    }
+    if (tipo === "MONTHLY" && diasMes.length > 0) {
+      rule += `;BYMONTHDAY=${diasMes.join(",")}`;
+    }
+
+    return rule;
+  }, [esRecurrente, tipo, diasSemana, diasMes, intervalo]);
+
+  // 3. EMITIR LA REGLA: Solo si el usuario tocó algo y es distinto al inicial
   useEffect(() => {
-    if (selectValue === "CUSTOM") {
-      let options = {
-        freq: RRule[customFreq],
-        interval: customInterval,
-      };
-
-      if (customFreq === "WEEKLY" && customDias.length > 0) {
-        options.byweekday = customDias.map((d) => RRule[d]);
-      }
-
-      if (endType === "count" && endCount > 0) {
-        options.count = endCount;
-      } else if (endType === "until" && endDate) {
-        const d = new Date(endDate);
-        if (!isNaN(d.getTime())) {
-          d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
-          d.setHours(23, 59, 59);
-          options.until = d;
-        }
-      }
-
-      try {
-        const rule = new RRule(options).toString();
-        onChangeRRule(rule.replace("RRULE:", ""));
-      } catch (err) {
-        console.error("Error generando RRule", err);
-      }
+    if (isParsing.current) return; 
+    
+    const newRule = generarRRule();
+    if (newRule !== initialRule) {
+        onChangeRRule(newRule);
     }
-  }, [customFreq, customInterval, customDias, endType, endCount, endDate, selectValue, onChangeRRule]);
+  }, [generarRRule, onChangeRRule, initialRule]);
 
-  const toggleDia = (dia) => {
-    setCustomDias((prev) =>
-      prev.includes(dia) ? prev.filter((d) => d !== dia) : [...prev, dia]
-    );
+  const toggleDiaSemana = (dia) => {
+    setDiasSemana((prev) => prev.includes(dia) ? prev.filter((d) => d !== dia) : [...prev, dia]);
+  };
+
+  const toggleDiaMes = (dia) => {
+    setDiasMes((prev) => prev.includes(dia) ? prev.filter((d) => d !== dia) : [...prev, dia]);
   };
 
   return {
-    selectValue, setSelectValue,
-    patrones, labels,
-    customFreq, setCustomFreq,
-    customInterval, setCustomInterval,
-    customDias, toggleDia,
-    endType, setEndType,
-    endCount, setEndCount,
-    endDate, setEndDate,
+    tipo, setTipo,
+    diasSemana, toggleDiaSemana,
+    diasMes, toggleDiaMes,
+    intervalo, setIntervalo,
   };
 }

@@ -1,12 +1,3 @@
-export const DIAS_SEMANA = [
-  { val: "MO", lbl: "L" },
-  { val: "TU", lbl: "M" },
-  { val: "WE", lbl: "X" },
-  { val: "TH", lbl: "J" },
-  { val: "FR", lbl: "V" },
-  { val: "SA", lbl: "S" },
-  { val: "SU", lbl: "D" }
-];
 
 export const UNIDADES_FRECUENCIA = {
   DAILY: "día(s)",
@@ -14,3 +5,16 @@ export const UNIDADES_FRECUENCIA = {
   MONTHLY: "mes(es)",
   YEARLY: "año(s)",
 };
+export const TIPOS_RECURRENCIA = [
+  { id: "DAILY", label: "Todos los días" },
+  { id: "WEEKLY", label: "Semanal" },
+  { id: "MONTHLY", label: "Mensual" },
+  { id: "YEARLY", label: "Anual" },
+  { id: "CUSTOM", label: "Personalizada" },
+];
+
+export const DIAS_SEMANA = [
+  { val: "MO", lbl: "Lun" }, { val: "TU", lbl: "Mar" }, { val: "WE", lbl: "Mié" },
+  { val: "TH", lbl: "Jue" }, { val: "FR", lbl: "Vie" }, { val: "SA", lbl: "Sáb" },
+  { val: "SU", lbl: "Dom" }
+];

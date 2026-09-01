@@ -4,102 +4,56 @@ import { useOcurrencias } from "./useOcurrencias";
 import { useRecurrencia } from "./useRecurrencia";
 
 export function useEventoForm(id) {
-
-  const {
-    crearEvento,
-    actualizarEvento,
-    eventoSeleccionado,
-    cargarEventoById,
-  } = useEvento();
-
+  const { crearEvento, actualizarEvento, eventoSeleccionado, cargarEventoById } = useEvento();
   const isEditing = Boolean(id);
 
-  // EVENTO GENERAL
   const [evento, setEvento] = useState({
-    titulo: "",
-    categoria: "Academico",
-    color: null,
-    estado: "Pendiente",
+    titulo: "", categoria: "Academico", color: null, estado: "Pendiente",
   });
+  
   const [esRecurrente, setEsRecurrente] = useState(false);
-  // Regla de recurrencia en formato RRULE (estilo Google Calendar).
-  // "unico" significa que el evento no se repite.
   const [recurrenciaRRule, setRecurrenciaRRule] = useState("unico");
-  // OCURRENCIAS
-  const {
-    ocurrencias,
-    establecerOcurrencias,
-    agregarOcurrencia,
-    agregarRango,
-    actualizarOcurrencia,
-    actualizarCampoOcurrencia,
-    eliminarOcurrencia,
-    separarOcurrencia,
-    obtenerOcurrenciasParaAPI,
-  } = useOcurrencias([
-    {
-      fechaInicio: "",
-      fechaFinalizacion: "",
-      lugar: "",
-      cantidadPersonas: 0,
-      id_encargado: "",
-      participantes: [],
-    },
-  ]);
 
-  // RECURRENCIA
+  // NUEVO: Estado para el prompt de decisión al modificar/eliminar una recurrencia
+  const [promptModificacion, setPromptModificacion] = useState({
+    activo: false,
+    ocurrenciaTarget: null,
+    accion: null, // "ELIMINAR" | "EDITAR"
+    datosCambio: null
+  });
+
   const {
-    actualizarTipo,
-    actualizarFrecuencia,
-    toggleDiaSemana,
-    actualizarConfiguracion,
-    limpiar: limpiarRecurrencia,
-    validarRecurrencia,
-    generarFechasDesdeRecurrencia,
-  } = useRecurrencia();
-  // Activa/desactiva la recurrencia del evento. Esto SOLO controla el RRULE:
-  // nunca debe tocar `ocurrencias`, ya que los bloques de fecha se agregan y
-  // eliminan de forma totalmente independiente, sea el evento recurrente o no.
-  const handleToggleRecurrencia = (activo) => {
+    ocurrencias, establecerOcurrencias, agregarOcurrencia, agregarRango,
+    actualizarOcurrencia: actualizarOcurrenciaBase,
+    actualizarCampoOcurrencia,
+    eliminarOcurrencia: eliminarOcurrenciaBase, separarOcurrencia
+  } = useOcurrencias([{ 
+    fechaInicio: "", fechaFinalizacion: "", lugar: "", cantidadPersonas: 0, 
+    id_encargado: null, participantes: [], tipo: "NORMAL", isModificada: false 
+  }]);
+
+  const { actualizarTipo, actualizarFrecuencia, toggleDiaSemana, actualizarConfiguracion, limpiar: limpiarRecurrencia, validarRecurrencia, generarFechasDesdeRecurrencia } = useRecurrencia();
+
+const handleToggleRecurrencia = (activo) => {
     setEsRecurrente(activo);
     if (activo) {
-      setRecurrenciaRRule("FREQ=DAILY");
-
-      // PURGA: Nos quedamos solo con la primera ocurrencia
-      if (ocurrencias.length > 1) {
-        establecerOcurrencias([ocurrencias[0]]);
+      // Si el evento no era recurrente y lo activan, forzamos un valor base para que la interfaz despierte
+      if (recurrenciaRRule === "unico" || !recurrenciaRRule) {
+          setRecurrenciaRRule("FREQ=DAILY");
       }
     } else {
+      // Al apagarlo, volvemos a único
       setRecurrenciaRRule("unico");
     }
   };
-  // CARGAR EVENTO CUANDO SE EDITA / VE
+
   useEffect(() => {
-
     if (!id) return;
-
-    console.log("Solicitando evento:", id);
-
     cargarEventoById(id);
-
   }, [id]);
 
-  // ==========================================
-  // PASAR EVENTO CARGADO AL FORMULARIO
-  // ==========================================
-
   useEffect(() => {
-
     if (!id || !eventoSeleccionado) return;
-
-    console.log(
-      "Evento recibido por useEventoForm:",
-      eventoSeleccionado
-    );
-
-    // ------------------------------------------
-    // DATOS GENERALES
-    // ------------------------------------------
 
     setEvento({
       titulo: eventoSeleccionado.titulo || "",
@@ -108,380 +62,159 @@ export function useEventoForm(id) {
       estado: eventoSeleccionado.estado || "Pendiente",
     });
 
-    // ------------------------------------------
-    // OCURRENCIAS
-    // ------------------------------------------
+    // Restaurar RRULE
+    if (eventoSeleccionado.recurrencia && eventoSeleccionado.recurrencia !== "unico") {
+      setEsRecurrente(true);
+      setRecurrenciaRRule(eventoSeleccionado.recurrencia);
+    } else {
+      setEsRecurrente(false);
+      setRecurrenciaRRule("unico");
+    }
 
     if (Array.isArray(eventoSeleccionado.ocurrencias)) {
       const ocurrenciasFormateadas = eventoSeleccionado.ocurrencias.map((oc) => {
+        const formatParaInputFecha = (fechaRaw) => {
+            if (!fechaRaw) return "";
+            const d = new Date(fechaRaw);
+            if (isNaN(d.getTime())) return "";
+            const tzOffset = d.getTimezoneOffset() * 60000;
+            return new Date(d - tzOffset).toISOString().slice(0, 16);
+        };
         const fInicio = formatParaInputFecha(oc.fechaInicio || oc.fecha_inicio);
         const fFin = formatParaInputFecha(oc.fechaFinalizacion || oc.fecha_finalizacion);
         const esTodoElDia = fInicio.includes("T00:00") && (fFin.includes("T23:59") || !fFin);
 
         return {
-          id: oc.id || oc.id_ocurrencia, // <-- CRÍTICO: Conservar el ID original de la base de datos
+          id: oc.id || oc.id_ocurrencia,
           idLocal: oc.idLocal || oc.id_ocurrencia || oc.id || crypto.randomUUID(),
           fechaInicio: fInicio,
           fechaFinalizacion: fFin,
           allDay: esTodoElDia,
           lugar: oc.lugar || "",
           cantidadPersonas: oc.cantidadPersonas ?? oc.cantidad_personas ?? 0,
-          id_encargado: oc.id_encargado || oc.encargado?.id || null, // <-- CRÍTICO: Usar null en vez de ""
-          participantes: Array.isArray(oc.participantes)
-            ? oc.participantes.map((p) => typeof p === "string" ? p : p.id).filter(Boolean)
-            : [],
-          participantesSeleccionados: Array.isArray(oc.participantes)
-            ? oc.participantes
-            : [],
+          id_encargado: oc.id_encargado || oc.encargado?.id || null,
+          participantes: Array.isArray(oc.participantes) ? oc.participantes.map((p) => typeof p === "string" ? p : p.id).filter(Boolean) : [],
+          participantesSeleccionados: Array.isArray(oc.participantes) ? oc.participantes : [],
+          // Mantenemos el tipo y estado de modificación
+          tipo: oc.tipo || "NORMAL",
+          isModificada: oc.isModificada || false
         };
       });
       establecerOcurrencias(ocurrenciasFormateadas);
     }
-  }, [
-    id,
-    eventoSeleccionado,
-  ]);
+  }, [id, eventoSeleccionado]);
+
+  const actualizarCampoEvento = (campo, valor) => setEvento((prev) => ({ ...prev, [campo]: valor }));
 
   // ==========================================
-  // ACTUALIZAR CAMPO DEL EVENTO
+  // INTERCEPTORES ESTILO GOOGLE CALENDAR
   // ==========================================
-  const formatParaInputFecha = (fechaRaw) => {
-    if (!fechaRaw) return "";
-    const d = new Date(fechaRaw);
-    if (isNaN(d.getTime())) return "";
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    return new Date(d - tzOffset).toISOString().slice(0, 16);
-  };
-  const actualizarCampoEvento = (
-    campo,
-    valor
-  ) => {
-
-    setEvento((prev) => ({
-      ...prev,
-      [campo]: valor,
-    }));
-
+  const eliminarOcurrencia = (idLocal) => {
+    if (esRecurrente && isEditing) {
+      setPromptModificacion({ activo: true, ocurrenciaTarget: idLocal, accion: "ELIMINAR" });
+    } else {
+      eliminarOcurrenciaBase(idLocal);
+    }
   };
 
+  const actualizarOcurrencia = (idLocal, cambios) => {
+    if (esRecurrente && isEditing) {
+      setPromptModificacion({ activo: true, ocurrenciaTarget: idLocal, accion: "EDITAR", datosCambio: cambios });
+    } else {
+      actualizarOcurrenciaBase(idLocal, cambios);
+    }
+  };
+
+  const aplicarDecisionRecurrencia = (decision) => {
+    const { ocurrenciaTarget, accion, datosCambio } = promptModificacion;
+    setPromptModificacion({ activo: false, ocurrenciaTarget: null, accion: null, datosCambio: null });
+
+    if (accion === "ELIMINAR") {
+      if (decision === "SOLO_ESTE") {
+        actualizarOcurrenciaBase(ocurrenciaTarget, { tipo: "EXCEPCION", isModificada: true });
+      } else if (decision === "TODOS") {
+        actualizarCampoEvento("estado", "Cancelado");
+      }
+    } else if (accion === "EDITAR") {
+      if (decision === "SOLO_ESTE") {
+        actualizarOcurrenciaBase(ocurrenciaTarget, { ...datosCambio, tipo: "MODIFICADA", isModificada: true });
+      } else if (decision === "TODOS") {
+        actualizarOcurrenciaBase(ocurrenciaTarget, { ...datosCambio, tipo: "NORMAL", isModificada: true });
+      }
+    }
+  };
+
   // ==========================================
-  // GUARDAR EVENTO
+  // GUARDAR EVENTO 
   // ==========================================
+const guardarEvento = async () => {
+    if (!evento.titulo || !evento.titulo.trim()) throw new Error("El título es obligatorio");
+    if (ocurrencias.length === 0) throw new Error("Debe haber al menos una ocurrencia");
+    if (isEditing && evento.estado === "Terminado") throw new Error("No se pueden editar eventos terminados");
 
-  const guardarEvento = async () => {
+    const ocurrenciasFormateadas = ocurrencias.map((oc) => {
+      // 1. Extraemos variables locales y el estado efímero del frontend
+      const { 
+        idLocal, 
+        personalizado, 
+        participantesSeleccionados, 
+        isModificada, // Lo extraemos para mapearlo a 'fueActualizado'
+        ...restoOc 
+      } = oc;
 
-    // ------------------------------------------
-    // VALIDACIONES
-    // ------------------------------------------
-
-    if (
-      !evento.titulo ||
-      !evento.titulo.trim()
-    ) {
-      throw new Error(
-        "El título es obligatorio"
-      );
-    }
-
-    if (ocurrencias.length === 0) {
-      throw new Error(
-        "Debe haber al menos una ocurrencia"
-      );
-    }
-
-    if (
-      isEditing &&
-      evento.estado === "Terminado"
-    ) {
-      throw new Error(
-        "No se pueden editar eventos terminados"
-      );
-    }
-
-    // ------------------------------------------
-    // AUXILIARES
-    // ------------------------------------------
-
-    const desglosar = (isoStr) => {
-
-      if (!isoStr) {
-        return {
-          d: "",
-          t: "",
-        };
+      if (!isEditing) {
+        delete restoOc.id;
+        delete restoOc.id_ocurrencia;
       }
 
-      const [d, t] =
-        isoStr.split("T");
+      // 2. Mapeamos los tipos del Frontend a los que entiende el EventoService.ts
+      let tipoBackend = restoOc.tipo;
+      if (tipoBackend === "NORMAL") tipoBackend = "unico";
+      if (tipoBackend === "MODIFICADA") tipoBackend = "modificada";
 
       return {
-        d,
-        t: t || "",
+        ...restoOc,
+        // El DTO espera camelCase para fechas y cantidad
+        fechaInicio: restoOc.fechaInicio ? new Date(restoOc.fechaInicio).toISOString() : null,
+        fechaFinalizacion: restoOc.fechaFinalizacion ? new Date(restoOc.fechaFinalizacion).toISOString() : null,
+        cantidadPersonas: restoOc.cantidadPersonas ?? 0,
+        
+        // El DTO espera snake_case SOLO para el encargado
+        id_encargado: restoOc.id_encargado === "" ? null : restoOc.id_encargado,
+        
+        tipo: tipoBackend,
+        
+        // CAMPO EFÍMERO: Solo viaja en el update y no se guarda en Prisma
+        fueActualizado: isModificada || false
       };
-    };
-
-    const sonConsecutivos = (
-      finAnterior,
-      inicioActual
-    ) => {
-
-      if (
-        !finAnterior ||
-        !inicioActual
-      ) {
-        return false;
-      }
-
-      const f1 =
-        new Date(
-          `${finAnterior}T00:00:00`
-        );
-
-      const f2 =
-        new Date(
-          `${inicioActual}T00:00:00`
-        );
-
-      const diffDias =
-        Math.round(
-          (f2 - f1) /
-          (1000 * 60 * 60 * 24)
-        );
-
-      return diffDias === 1;
-    };
-
-    const arraysIguales = (
-      a = [],
-      b = []
-    ) => {
-
-      if (a.length !== b.length) {
-        return false;
-      }
-
-      const s1 = [...a].sort();
-      const s2 = [...b].sort();
-
-      return s1.every(
-        (val, i) =>
-          val === s2[i]
-      );
-    };
-
-    // ------------------------------------------
-    // ORDENAR
-    // ------------------------------------------
-
-    const ordenadas =
-      [...ocurrencias].sort(
-        (a, b) =>
-          new Date(a.fechaInicio || 0) -
-          new Date(b.fechaInicio || 0)
-      );
-
-    // ------------------------------------------
-    // EXPANDIR (Aplica el horario a cada día)
-    // ------------------------------------------
-    const expandidas = [];
-
-    ordenadas.forEach((oc) => {
-      const inicio = desglosar(oc.fechaInicio);
-      const fin = desglosar(oc.fechaFinalizacion || oc.fechaInicio);
-
-      if (!inicio.d) return;
-
-      const fechaActual = new Date(`${inicio.d}T00:00:00`);
-      const fechaFin = new Date(`${fin.d || inicio.d}T00:00:00`);
-
-      let esPrimerDia = true; // <-- Bandera para saber cuál es la ocurrencia original
-
-      // Iteramos sobre cada día dentro del rango
-      while (fechaActual <= fechaFin) {
-        const fechaStr = fechaActual.toISOString().split("T")[0];
-
-        const nuevaOc = {
-          ...oc,
-          fechaInicio: inicio.t ? `${fechaStr}T${inicio.t}` : fechaStr,
-          fechaFinalizacion: fin.t ? `${fechaStr}T${fin.t}` : fechaStr,
-          // Convertimos string vacío a null antes de ir al backend
-          id_encargado: oc.id_encargado === "" ? null : oc.id_encargado,
-        };
-
-        // Si es un día clonado/expandido extra, le BORRAMOS el ID para que el 
-        // backend no intente pisar el mismo registro y genere una nueva fila
-        if (!esPrimerDia) {
-          delete nuevaOc.id;
-          delete nuevaOc.id_ocurrencia;
-        }
-
-        expandidas.push(nuevaOc);
-
-        esPrimerDia = false;
-        fechaActual.setDate(fechaActual.getDate() + 1);
-      }
     });
 
-    // ------------------------------------------
-    // FORMATEAR FECHAS
-    // ------------------------------------------
-    const ocurrenciasFormateadas =
-      expandidas.map(
-        ({
-          idLocal,
-          personalizado,
-          participantesSeleccionados,
-          ...oc
-        }) => ({
-          ...oc,
-          fechaInicio: oc.fechaInicio
-            ? new Date(oc.fechaInicio).toISOString()
-            : null,
-          fechaFinalizacion: oc.fechaFinalizacion
-            ? new Date(oc.fechaFinalizacion).toISOString()
-            : null,
-        })
-      );
-
-    // ------------------------------------------
-    // AGRUPAR
-    // ------------------------------------------
-
-    const agrupadas = [];
-
-    ordenadas.forEach((oc) => {
-
-      if (agrupadas.length === 0) {
-
-        agrupadas.push({
-          ...oc,
-        });
-
-        return;
-      }
-
-      const prev =
-        agrupadas[
-        agrupadas.length - 1
-        ];
-
-      const prevInicio =
-        desglosar(
-          prev.fechaInicio
-        );
-
-      const prevFin =
-        desglosar(
-          prev.fechaFinalizacion
-        );
-
-      const currInicio =
-        desglosar(
-          oc.fechaInicio
-        );
-
-      const currFin =
-        desglosar(
-          oc.fechaFinalizacion
-        );
-
-      const consecutivas =
-        sonConsecutivos(
-          prevFin.d,
-          currInicio.d
-        );
-
-      const mismoHorario =
-        prevInicio.t ===
-        currInicio.t &&
-        prevFin.t ===
-        currFin.t;
-
-      const mismosDatos =
-        prev.lugar === oc.lugar &&
-        Number(
-          prev.cantidadPersonas
-        ) === Number(
-          oc.cantidadPersonas
-        ) &&
-        prev.id_encargado ===
-        oc.id_encargado &&
-        arraysIguales(
-          prev.participantes,
-          oc.participantes
-        );
-
-      if (
-        consecutivas &&
-        mismoHorario &&
-        mismosDatos
-      ) {
-
-        prev.fechaFinalizacion =
-          currFin.t
-            ? `${currFin.d}T${currFin.t}`
-            : currFin.d;
-
-      } else {
-
-        agrupadas.push({
-          ...oc,
-        });
-
-      }
-
-    });
-
-    // PAYLOAD
-    const payload = {
+   const payload = {
       ...evento,
       ocurrencias: ocurrenciasFormateadas,
-      recurrencia: esRecurrente ? recurrenciaRRule : "unico",
+      // PREFIJO OBLIGATORIO PARA GOOGLE CALENDAR
+      recurrencia: esRecurrente 
+        ? (recurrenciaRRule.startsWith("RRULE:") ? recurrenciaRRule : `RRULE:${recurrenciaRRule}`) 
+        : "unico",
     };
-
-    console.log("Payload enviado:", payload); // <-- Movido aquí adentro
 
     if (isEditing) {
       await actualizarEvento(id, payload);
     } else {
       await crearEvento(payload);
     }
+    
     return true;
   };
 
   return {
-
-    // Evento
-    evento,
-    actualizarCampoEvento,
-
-    // Ocurrencias
-    ocurrencias,
-    establecerOcurrencias,
-    agregarOcurrencia,
-    agregarRango,
-    actualizarOcurrencia,
-    actualizarCampoOcurrencia,
-    eliminarOcurrencia,
-    obtenerOcurrenciasParaAPI,
-    separarOcurrencia,
-
-    // Recurrencia
-    esRecurrente,
-    recurrenciaRRule,
-    setRecurrenciaRRule,
-    handleToggleRecurrencia,
-    actualizarTipo,
-    actualizarFrecuencia,
-    toggleDiaSemana,
-    actualizarConfiguracion,
-    limpiarRecurrencia,
-    validarRecurrencia,
-    generarFechasDesdeRecurrencia,
-
-    // General
-    isEditing,
-    eventoSeleccionado,
-    guardarEvento,
+    evento, actualizarCampoEvento, ocurrencias, establecerOcurrencias,
+    agregarOcurrencia, agregarRango, actualizarOcurrencia, actualizarCampoOcurrencia,
+    eliminarOcurrencia, separarOcurrencia,
+    promptModificacion, setPromptModificacion, aplicarDecisionRecurrencia, // Propagamos el prompt a la UI
+    esRecurrente, recurrenciaRRule, setRecurrenciaRRule, handleToggleRecurrencia,
+    actualizarTipo, actualizarFrecuencia, toggleDiaSemana, actualizarConfiguracion,
+    limpiarRecurrencia, validarRecurrencia, generarFechasDesdeRecurrencia,
+    isEditing, eventoSeleccionado, guardarEvento,
   };
 }

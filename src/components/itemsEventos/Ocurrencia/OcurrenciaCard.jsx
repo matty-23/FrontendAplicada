@@ -2,10 +2,8 @@ import { useState } from "react";
 import OcurrenciaCardHeader from "./OcurrenciaCardHeader";
 import OcurrenciaCardFields from "./OcurrenciaCardFields";
 import OcurrenciaCardSeparar from "./OcurrenciaCardSeparar";
-
 import { useOcurrenciaFechas } from "../../../hooks/Evento/useOcurrenciasFechas";
 import { esOcurrenciaRango } from "../../../utils/ocurrenciaUtils";
-
 import "./OcurrenciaCard.css";
 
 export default function OcurrenciaCard({
@@ -15,6 +13,8 @@ export default function OcurrenciaCard({
   onEliminar,
   onSeparar,
   soloLectura = false,
+  esRecurrente, // <-- Variable añadida correctamente
+  isYearly      // <-- Variable añadida correctamente
 }) {
   const [expandida, setExpandida] = useState(false);
 
@@ -65,6 +65,8 @@ export default function OcurrenciaCard({
             onTimeChange={cambiarHora}
             onAllDayChange={cambiarAllDay}
             onChange={cambiar}
+            esRecurrente={esRecurrente} // <-- Pasado al hijo
+            isYearly={isYearly}         // <-- Pasado al hijo
           />
 
           {esRango && !soloLectura && (

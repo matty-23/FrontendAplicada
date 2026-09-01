@@ -8,7 +8,7 @@
 .recurrencia-field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 10px;
 }
 
 .recurrencia-field label {
@@ -20,82 +20,108 @@
 .recurrencia-config {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 14px;
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: 10px;
 }
 
-.recurrencia-input-group {
+.recurrencia-tipos-group {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 6px;
+  background: white;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.recurrencia-input-group input {
-  width: 90px;
-}
-
-.recurrencia-input-group span {
+.recurrencia-tipo-btn {
+  flex: 1;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
   font-size: 13px;
+  font-weight: 600;
   color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.recurrencia-tipo-btn:hover {
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+
+.recurrencia-tipo-btn.active {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  box-shadow: var(--shadow-sm);
 }
 
 .recurrencia-dias {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.recurrencia-dia {
-  width: 34px;
-  height: 34px;
-
+.recurrencia-dia-chip {
+  width: 42px;
+  height: 42px;
   border: 1px solid var(--gray-300);
   border-radius: 50%;
-
   background: white;
   color: var(--gray-700);
-
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-
   cursor: pointer;
-
-  transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.recurrencia-dia:hover {
-  border-color: var(--blue-600);
+.recurrencia-dia-chip:hover {
+  border-color: var(--blue-400);
 }
 
-.recurrencia-dia.seleccionado {
-  background: var(--blue-800);
-  border-color: var(--blue-800);
+.recurrencia-dia-chip.seleccionado {
+  background: var(--blue-700);
+  border-color: var(--blue-700);
   color: white;
+  box-shadow: 0 4px 10px rgba(0, 114, 198, 0.2);
+}
+
+.recurrencia-mes-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  max-width: 350px;
+}
+
+.recurrencia-panel-content {
+  background: white;
+  padding: 20px;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
 }
 
 .recurrencia-hint {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.interval-input {
-  width: 80px;
+.recurrencia-hint i {
+  color: var(--blue-500);
 }
 
-.end-count-input {
-  width: 60px;
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.disabled-option-text {
-  opacity: 0.5;
-}
-
-.dias-semana-container {
-  margin-top: 16px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
