@@ -6,44 +6,46 @@ import '../styles/LoginPage.css';
 
 export const LoginPage = () => {
   const { manejoBotonLogin, manejoBotonLogout, isLoading, error } = useAuth();
-  const { user } = useContexto(); 
+  const { user } = useContexto();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      navigate('/admin'); 
+      navigate('/admin');
     }
   }, [user, navigate]);
 
   return (
-    <div className="login-box">
-      <h2 className="login-title">Iniciar Sesión</h2>
-      {error && <div className="error-box">{error}</div>}
-      <form onSubmit={manejoBotonLogin} className="login-form">
+    <div className="login-wrapper">
+      <div className="login-box">
+        <h2 className="login-title">Iniciar Sesión</h2>
+        {error && <div className="error-box">{error}</div>}
+        <form onSubmit={manejoBotonLogin} className="login-form">
 
-        <div className="input-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            name="correo"
-            required
-          />
-        </div>
+          <div className="input-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="correo"
+              required
+            />
+          </div>
 
-        <div className="input-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            name="contraseña"
-            required
-          />
-        </div>
+          <div className="input-group">
+            <label>Password:</label>
+            <input
+              type="password"
+              name="contraseña"
+              required
+            />
+          </div>
 
-<button type="submit" disabled={isLoading} className="login-button">
-  {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-</button>
+          <button type="submit" disabled={isLoading} className="login-button">
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          </button>
 
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

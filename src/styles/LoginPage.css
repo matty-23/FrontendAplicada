@@ -1,14 +1,9 @@
-/* =========================================================
-   LOGIN PAGE - ESTILOS
-   ========================================================= */
-
-/* Ajuste del root específicamente para centrar el login */
-#root {
+.login-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100svh;
-  background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 50%, #eff6ff 100%); /* Fondo más visible */
+  background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 50%, #eff6ff 100%);
   padding: 20px;
 }
 
