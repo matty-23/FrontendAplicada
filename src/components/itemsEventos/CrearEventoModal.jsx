@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useEventoForm } from "../../hooks/Evento/useEventoForm";
-
 import EventoGeneralForm from "./EventoGeneralForm";
-import RecurrenciaForm from "./RecurrenciaForm";
-import OcurrenciasList from "./OcurrenciasList";
-
+import RecurrenciaForm from "./Recurrencia/RecurrenciaForm";
+import OcurrenciasList from "./Ocurrencia/OcurrenciasList";
 import "./CrearEventoModal.css";
 
 export default function CrearEventoModal({
@@ -48,11 +46,10 @@ export default function CrearEventoModal({
 
     guardarEvento,
 
-  } = useEventoForm(
-    modo === "crear"
-      ? null
-      : idEvento
-  );
+    promptModificacion,
+    setPromptModificacion,
+    aplicarDecisionRecurrencia,
+  } = useEventoForm(modo === "crear" ? null : idEvento);
 
   const [error, setError] =
     useState(null);
@@ -115,8 +112,8 @@ export default function CrearEventoModal({
       }
 
       return `${fechaStr}T${esFin
-          ? "23:59"
-          : "00:00"
+        ? "23:59"
+        : "00:00"
         }`;
     };
 
@@ -186,16 +183,67 @@ export default function CrearEventoModal({
   if (!isOpen) {
     return null;
   }
+  const renderPromptModificacion = () => {
+    if (!promptModificacion.activo) return null;
 
+    const esEliminar = promptModificacion.accion === "ELIMINAR";
+
+    return (
+      <div className="modal-overlay" style={{ zIndex: 1100 }}>
+        <div className="modal-content" style={{ maxWidth: "420px", padding: "24px", height: "auto" }}>
+          <h3 style={{ marginTop: 0, color: "var(--gray-900)" }}>
+            {esEliminar ? "¿Qué quieres eliminar?" : "¿Cómo quieres aplicar este cambio?"}
+          </h3>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "24px 0" }}>
+            <button
+              type="button"
+              className="v2-btn-secondary"
+              style={{ justifyContent: "flex-start", padding: "12px", height: "auto" }}
+              onClick={() => aplicarDecisionRecurrencia("SOLO_ESTE")}
+            >
+              <i className="fa-regular fa-calendar-check" style={{ fontSize: "16px", color: "var(--blue-500)" }}></i>
+              <div style={{ textAlign: "left", marginLeft: "8px" }}>
+                <strong>Solo este evento</strong>
+                <div style={{ fontSize: "11px", color: "var(--gray-500)" }}>Modifica únicamente esta fecha.</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="v2-btn-secondary"
+              style={{ justifyContent: "flex-start", padding: "12px", height: "auto" }}
+              onClick={() => aplicarDecisionRecurrencia("TODOS")}
+            >
+              <i className="fa-solid fa-layer-group" style={{ fontSize: "16px", color: "var(--blue-500)" }}></i>
+              <div style={{ textAlign: "left", marginLeft: "8px" }}>
+                <strong>Todos los eventos de la serie</strong>
+                <div style={{ fontSize: "11px", color: "var(--gray-500)" }}>Se aplicará a toda la recurrencia.</div>
+              </div>
+            </button>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button
+              type="button"
+              className="v2-btn-ghost"
+              onClick={() => setPromptModificacion({ activo: false, ocurrenciaTarget: null, accion: null, datosCambio: null })}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
   // ==========================================
   // MODAL
   // ==========================================
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={onClose}
-    >
+  <>
+    {renderPromptModificacion()}
+    <div className="modal-overlay" onClick={onClose}>
 
       <div
         className="modal-content"
@@ -246,9 +294,7 @@ export default function CrearEventoModal({
 
           <EventoGeneralForm
             evento={evento}
-            onChange={
-              actualizarCampoEvento
-            }
+            onChange={actualizarCampoEvento}
           />
 
           {/* OCURRENCIAS (bloques de fecha: independientes de la
@@ -257,27 +303,10 @@ export default function CrearEventoModal({
           <OcurrenciasList
             ocurrencias={ocurrencias}
             valoresGenerales={evento}
-
-            onChange={
-              actualizarOcurrencia
-            }
-
-            onAgregar={
-              agregarOcurrencia
-            }
-
-            onEliminar={
-              eliminarOcurrencia
-            }
-
-            onSeparar={
-              separarOcurrencia
-            }
-          />
-
-          {/* RECURRENCIA */}
-
-          <RecurrenciaForm
+            onChange={actualizarOcurrencia}
+            onAgregar={agregarOcurrencia}
+            onEliminar={eliminarOcurrencia}
+            onSeparar={separarOcurrencia}
             isEditing={isEditing}
             esRecurrente={esRecurrente}
             recurrenciaRRule={recurrenciaRRule}
@@ -325,6 +354,7 @@ export default function CrearEventoModal({
 
       </div>
 
-    </div>
+    </div> </>
   );
+
 }

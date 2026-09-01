@@ -1,0 +1,62 @@
+/* RecurrenciaCustomPanel.css */
+
+.custom-panel-container {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.custom-panel-divider {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--gray-200);
+}
+
+.interval-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.interval-text {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+/* Opciones de Finalización (Radio Buttons) */
+.end-condition-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.end-condition-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.end-condition-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.end-condition-radio {
+  accent-color: var(--blue-800);
+  cursor: pointer;
+}
+
+.end-condition-input {
+  padding: 4px 8px;
+  transition: opacity 0.2s ease;
+}
+
+/* Magia de CSS: Si el input está deshabilitado, le bajamos la opacidad automáticamente */
+.end-condition-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

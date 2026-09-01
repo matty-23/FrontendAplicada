@@ -36,7 +36,16 @@
 .calendario-container .fc-view-harness {
   min-height: 500px;
 }
+/* Quitar los márgenes en la vista de semana/día para evitar que se rompa el layout absoluto */
+.calendario-container .fc-timegrid-event {
+  margin: 0 !important;
+  border-radius: 4px !important;
+}
 
+/* Asegurarse de que el color de texto interno se mantenga correcto en la vista semanal */
+.calendario-container .fc-timegrid-event .fc-event-main {
+  padding: 4px 6px !important;
+}
 /* =======================================================
    ESTADOS DE CARGA / ERROR
 ========================================================== */

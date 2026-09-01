@@ -4,14 +4,15 @@ import { agruparOcurrencias } from "../../utils/agruparOcurrencias";
 const generarIdLocal = () => crypto.randomUUID();
 
 function crearOcurrenciaBase(datos = {}) {
+  const hoy = new Date().toISOString().split("T")[0]; // <-- Añadido
   return {
     idLocal: datos.idLocal || generarIdLocal(),
-    fechaInicio: datos.fechaInicio || "",
-    fechaFinalizacion: datos.fechaFinalizacion || datos.fechaInicio || "",
-    allDay: datos.allDay ?? true, // <-- NUEVO: Checkbox "Todo el día" activado por defecto
+    fechaInicio: datos.fechaInicio || hoy, // <-- Añadido fallback a hoy
+    fechaFinalizacion: datos.fechaFinalizacion || datos.fechaInicio || hoy, // <-- Añadido fallback a hoy
+    allDay: datos.allDay ?? true,
     lugar: datos.lugar || "",
     cantidadPersonas: datos.cantidadPersonas ?? 0,
-    id_encargado: datos.id_encargado || "",
+    id_encargado: datos.id_encargado || null,
     participantes: datos.participantes || [],
     participantesSeleccionados: datos.participantesSeleccionados || [],
     comentarios: datos.comentarios || [],

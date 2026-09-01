@@ -6,14 +6,14 @@ import EventItem from "../../components/itemsEventos/EventItem";
 import SearchInput from "../../components/itemsEventos/SearchInput";
 import DateFilter from "../../components/itemsEventos/DateFilter";
 import FilterToolbar from "../../components/itemsEventos/FilterToolBar";
-
+import { rightActions } from "../../utils/rightActions";
 import { useNavigate } from "react-router-dom";
 import { useEvento } from "../../hooks/Evento/useEvento";
 import { useEventosFilter } from "../../hooks/Evento/useEventosFilter";
 import { useEventosSelection } from "../../hooks/Evento/useEventosSelection";
 
 import {adaptarEventoAUI,obtenerFechasConEventos} from "../../utils/eventoUtils";
-import './EventoPages.css'
+import '../../styles/EventoPages.css'
 const TABS = ["Todos", "Pendientes", "En revisión", "Activos"];
 
 export default function EventosPage() {
@@ -72,21 +72,13 @@ export default function EventosPage() {
   // ACCIONES
   // =========================
 
-  const rightActions = (
-    <button
-      className="v2-btn-primary"
-      onClick={() => nav("/admin/eventos/crear")}
-    >
-      <i className="fa-solid fa-plus"></i>
-      Nuevo
-    </button>
-  );
+  
 
   return (
     <DashboardLayout
       breadcrumb="Gestión / Eventos"
       title="Gestión de Eventos"
-      rightActions={rightActions}
+      rightActions={rightActions("Nuevo","/admin/eventos/crear")}
     >
 
       {/* =========================

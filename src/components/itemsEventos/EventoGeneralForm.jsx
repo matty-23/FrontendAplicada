@@ -1,11 +1,7 @@
 
-export default function EventoGeneralForm({
-  evento,
-  onChange,
-}) {
-  const handleChange = (campo, valor) => {
-    onChange(campo, valor);
-  };
+export default function EventoGeneralForm({ evento,onChange,}) {
+
+  const handleChange = (campo, valor) => {onChange(campo, valor);};
 
   return (
     <div className="crear-evento-detalles">
