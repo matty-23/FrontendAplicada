@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContexto } from '../hooks/useContext';
 import { useAuth } from '../hooks/useAuth';
+import '../styles/LoginPage.css';
 
 export const LoginPage = () => {
   const { manejoBotonLogin, manejoBotonLogout, isLoading, error } = useAuth();
