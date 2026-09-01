@@ -1,47 +1,121 @@
+import { useMemo } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import Calendario from "../components/itemsCalendario/Calendario";
+import { useEvento } from "../hooks/Evento/useEvento";
 
-const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-const EVENTS = { 5: ["ev-yellow", "Examen"], 11: ["ev-orange", "Solicitud"], 12: ["ev-green", "Jornada"], 17: ["ev-blue", "Evento UX"], 22: ["ev-yellow", "Workshop"], 28: ["ev-green", "TechTalks"] };
+export default function CalendarioPage() {
+  // 1. Traemos los eventos reales desde tu base de datos
+  const { eventos, cargando, error, cargarEventos } = useEvento();
+  // 2. Transformamos los eventos al formato de FullCalendar.
+  // useMemo: sólo se recalcula si "eventos" cambia (no en cada render de la página).
+  const eventosFormateados = useMemo(() => {
+    return eventos.flatMap((ev) => {
+      // Usamos flatMap en lugar de map para poder devolver múltiples eventos por cada ocurrencia si es necesario
+      return (ev.ocurrencias || []).flatMap((oc, index) => {
+        const estado = (ev.estado || "pendiente").toLowerCase();
+        let className = "ev-orange";
+        if (estado === "activo" || estado === "active") {
+          className = "ev-green";
+        } else if (estado.includes("revis")) {
+          className = "ev-blue";
+        }
 
-export default function CalendarioPageV2() {
-  const empty = [null, null];
-  const cells = [...empty, ...Array.from({ length: 31 }, (_, i) => i + 1), null, null];
+        const fechaI = oc.fechaInicio || oc.fecha_inicio || "";
+        const fechaF = oc.fechaFinalizacion || oc.fecha_finalizacion || "";
+        const idOcurrencia = oc.id || oc.idLocal || oc.id_ocurrencia;
 
+        const inicio = new Date(fechaI);
+        const fin = new Date(fechaF);
+
+        const isAllDay =
+          inicio.getHours() === 0 &&
+          inicio.getMinutes() === 0 &&
+          fin.getHours() === 23 &&
+          fin.getMinutes() === 59;
+
+        // EXPANSIÓN: Si no es de todo el día y abarca múltiples fechas
+        if (!isAllDay && fechaI && fechaF && fechaI.includes("T") && fechaF.includes("T")) {
+          const dateStartStr = fechaI.split("T")[0];
+          const dateEndStr = fechaF.split("T")[0];
+
+          if (dateStartStr !== dateEndStr) {
+            const timeStart = fechaI.split("T")[1];
+            const timeEnd = fechaF.split("T")[1];
+
+            const splitEvents = [];
+            const currentDate = new Date(`${dateStartStr}T00:00:00`);
+            const lastDate = new Date(`${dateEndStr}T00:00:00`);
+
+            let subIndex = 0;
+            // Generamos un evento individual para cada día en el calendario
+            while (currentDate <= lastDate) {
+              const currentStr = currentDate.toISOString().split("T")[0];
+              splitEvents.push({
+                id: `${idOcurrencia || ev.id + '-oc-' + index}-split-${subIndex}`,
+                title: ev.titulo,
+                start: `${currentStr}T${timeStart}`,
+                end: `${currentStr}T${timeEnd}`,
+                allDay: false,
+                className: className,
+                extendedProps: {
+                  idEvento: ev.id,
+                  idOcurrencia: idOcurrencia, // Conservamos el ID original para que funcione el click/edición
+                  estado: ev.estado,
+                  lugar: oc.lugar
+                }
+              });
+              currentDate.setDate(currentDate.getDate() + 1);
+              subIndex++;
+            }
+            return splitEvents;
+          }
+        }
+
+        // Retorno por defecto (para eventos de 1 solo día o los de "todo el día")
+        return [{
+          id: idOcurrencia || `${ev.id}-oc-${index}`,
+          title: ev.titulo,
+          start: fechaI,
+          end: fechaF,
+          allDay: isAllDay,
+          className: className,
+          extendedProps: {
+            idEvento: ev.id,
+            idOcurrencia,
+            estado: ev.estado,
+            lugar: oc.lugar
+          }
+        }];
+      });
+    });
+  }, [eventos]);
   const rightActions = (
-    <>
-      <div style={{ display: "flex", background: "var(--gray-100)", borderRadius: 9, padding: 3, gap: 2 }}>
-        {["Mes", "Semana", "Día"].map((v, i) => <button key={v} className="v2-tab" style={i === 0 ? { background: "white", color: "var(--blue-800)", boxShadow: "var(--shadow-xs)" } : { border: "none", background: "transparent" }}>{v}</button>)}
-      </div>
-      <button className="v2-btn-primary"><i className="fa-solid fa-plus"></i> Añadir</button>
-    </>
+    <button className="v2-btn-primary">
+      <i className="fa-solid fa-plus"></i>
+      Añadir
+    </button>
   );
 
   return (
-    <DashboardLayout breadcrumb="Principal / Calendario" title="Calendario General" rightActions={rightActions}>
-      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <div className="v2-cal-full" style={{ flex: 1 }}>
-          <div className="v2-cal-full-head">
-            <h2>Agosto 2026</h2>
-            <div className="v2-cal-controls">
-              <button className="v2-btn-secondary" style={{ padding: "6px 14px", fontSize: 12 }}>Hoy</button>
-              <button className="v2-icon-btn" style={{ width: 32, height: 32 }}><i className="fa-solid fa-chevron-left"></i></button>
-              <button className="v2-icon-btn" style={{ width: 32, height: 32 }}><i className="fa-solid fa-chevron-right"></i></button>
-            </div>
+    <DashboardLayout
+      breadcrumb="Principal / Calendario"
+      title="Calendario General"
+      rightActions={rightActions}
+    >
+      <div className="calendario-page" style={{ height: "100%" }}>
+        {cargando ? (
+          <div className="calendario-loading">
+            <i className="fa-solid fa-circle-notch fa-spin fa-2x"></i>
+            <p className="calendario-loading-text">Cargando eventos...</p>
           </div>
-          <div className="v2-cal-body">
-            <div className="v2-cal-grid">
-              {DAYS.map(d => <div className="v2-cal-dhead" key={d}>{d}</div>)}
-              {cells.map((c, i) =>
-                c === null
-                  ? <div className="v2-cal-cell empty" key={"e" + i}></div>
-                  : <div className={`v2-cal-cell${c === 17 ? " today" : ""}`} key={c}>
-                      {c}
-                      {EVENTS[c] && <div className={`v2-cal-ev ${EVENTS[c][0]}`}>{EVENTS[c][1]}</div>}
-                    </div>
-              )}
-            </div>
+        ) : error ? (
+          <div className="calendario-error">
+            <i className="fa-solid fa-triangle-exclamation"></i>
+            <p>No se pudieron cargar los eventos. {error}</p>
           </div>
-        </div>
+        ) : (
+          <Calendario events={eventosFormateados} onEventoModificado={cargarEventos} />
+        )}
       </div>
     </DashboardLayout>
   );

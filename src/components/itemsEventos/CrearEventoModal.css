@@ -1,0 +1,246 @@
+/* CrearEventoModal.css */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(3px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: min(720px, 100%);
+  max-height: min(88vh, 760px);
+
+  background: #fff;
+  border-radius: 16px;
+
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.18),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.modal-header {
+  min-height: 72px;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #e9edf2;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  font-size: 20px;
+  font-weight: 700;
+  color: #172033;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #7b8494;
+
+  font-size: 22px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+}
+
+.modal-close:hover {
+  background: #f1f3f6;
+  color: #172033;
+}
+
+/* =========================
+   BODY
+========================= */
+
+.modal-body {
+  padding: 22px 24px 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  overflow-y: auto;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.modal-error {
+  padding: 11px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  font-size: 13px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.modal-footer {
+  min-height: 68px;
+
+  padding: 12px 24px;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  border-top: 1px solid #e9edf2;
+  background: #fff;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.modal-footer button {
+  height: 40px;
+
+  padding: 0 18px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+}
+
+.v2-btn-secondary {
+  background: #fff;
+  border: 1px solid #d9dee7;
+  color: #344054;
+}
+
+.v2-btn-secondary:hover {
+  background: #f8fafc;
+}
+
+.v2-btn-primary {
+  background: #07518c;
+  border: 1px solid #07518c;
+  color: white;
+}
+
+.v2-btn-primary:hover {
+  background: #064575;
+  border-color: #064575;
+}
+
+.v2-btn-primary:disabled,
+.v2-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #d6dbe3;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #b8c0cc;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-height: 94vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-header {
+    padding: 0 18px;
+  }
+
+  .modal-body {
+    padding: 18px;
+  }
+
+  .modal-footer {
+    padding: 12px 18px;
+  }
+
+  .modal-footer button {
+    flex: 1;
+  }
+}
+.modal-body > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+}

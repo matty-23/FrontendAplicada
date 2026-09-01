@@ -85,41 +85,28 @@ export const eventoService = {
     },
 
     // Participantes
+async actualizarOcurrencia(eventoId, ocurrenciaId, dto) {
+    console.log('ACTUALIZANDO OCURRENCIA:', {eventoId, ocurrenciaId,dto});
 
-    async asignarEncargado(eventoId, ocurrenciaId, usuarioId) {
-        console.log('ASIGNANDO ENCARGADO:', {
-            eventoId,
-            ocurrenciaId,
-            usuarioId
-        });
+    const url =`${BFF_URL}/api/eventos/${eventoId}/ocurrencias/${ocurrenciaId}`;
+    console.log('URL:', url);
 
-        const url =
-            `${BFF_URL}/api/eventos/${eventoId}/ocurrencias/${ocurrenciaId}/encargado`;
+    const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json',},
+        credentials: 'include',
+        body: JSON.stringify(dto),
+    });
 
-        console.log('URL:', url);
+    console.log('STATUS:', response.status);
+    const texto = await response.text();
+    console.log('RESPUESTA:', texto);
 
-        const response = await fetch(url, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ usuarioId }),
-        });
-
-        console.log('STATUS:', response.status);
-
-        const texto = await response.text();
-        console.log('RESPUESTA:', texto);
-
-        if (!response.ok) {
-            throw new Error(
-                `Error al asignar encargado: ${response.status} - ${texto}`
-            );
-        }
-
-        return texto ? JSON.parse(texto) : null;
-    },
+    if (!response.ok) {
+        throw new Error( `Error al actualizar ocurrencia: ${response.status} - ${texto}`);
+    }
+    return texto ? JSON.parse(texto) : null;
+},
     async agregarParticipantes(idOcurrencia, participantes) {
         const response = await fetch(`${BFF_URL}/api/eventos/ocurrencias/${idOcurrencia}/participantes`, {
             method: 'PATCH',

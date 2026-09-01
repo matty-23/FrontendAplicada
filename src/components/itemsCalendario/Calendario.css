@@ -1,0 +1,219 @@
+/* =======================================================
+   CONTENEDOR Y ESTRUCTURA BÁSICA
+========================================================== */
+.calendario-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+
+  /* Look "card" consistente con el resto del dashboard (.v2-card) */
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid var(--gray-200, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(0,0,0,0.06));
+  overflow: hidden;
+}
+
+/* Ocupa el espacio restante debajo del header (Hoy/Mes/Semana/Día).
+   flex + min-height:0 es lo que le da una altura real al wrapper para
+   que FullCalendar (height="100%") pueda calcular su propio alto y,
+   en semana/día, generar su scroll interno en vez de estirar toda la página. */
+.calendario-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.calendario-container .fc {
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+/* Asegura que la vista ocupe el espacio */
+.calendario-container .fc-view-harness {
+  min-height: 500px;
+}
+
+/* =======================================================
+   ESTADOS DE CARGA / ERROR
+========================================================== */
+.calendario-loading {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--blue-500, #0072c6);
+  background: white;
+  border: 1px solid var(--gray-200, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+}
+.calendario-loading-text {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.calendario-error {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px;
+  text-align: center;
+  color: #991b1b;
+  background: var(--red-100, #fee2e2);
+  border-radius: var(--radius-lg, 16px);
+}
+.calendario-error i { font-size: 24px; }
+
+/* Línea del "ahora" (nowIndicator) en semana/día */
+.calendario-container .fc-timegrid-now-indicator-line {
+  border-color: #ef4444 !important;
+}
+.calendario-container .fc-timegrid-now-indicator-arrow {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+/* =======================================================
+   GRILLA Y ENCABEZADOS (Diseño limpio)
+========================================================== */
+/* Bordes de la grilla mucho más sutiles */
+.calendario-container .fc-theme-standard td,
+.calendario-container .fc-theme-standard th {
+  border-color: #f1f5f9 !important; /* Gris ultra claro */
+}
+
+/* Encabezados de los días (SUN, MON, TUE...) */
+.calendario-container .fc-col-header-cell {
+  background: white !important; /* Quitamos el fondo gris feo */
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 10px 0 !important;
+}
+
+.calendario-container .fc-col-header-cell-cushion {
+  color: #64748b !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Números de los días (1, 2, 3...) */
+.calendario-container .fc-daygrid-day-number {
+  padding: 8px 12px !important;
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Día actual (Hoy) destacado sutilmente */
+.calendario-container .fc-day-today {
+  background: #f8fafc !important;
+}
+.calendario-container .fc-day-today .fc-daygrid-day-number {
+  color: white !important;
+  background: #003c71 !important; /* Tu color principal */
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px;
+  padding: 0 !important;
+}
+
+/* =======================================================
+   ESTÉTICA DE LOS EVENTOS (PÍLDORAS)
+========================================================== */
+.calendario-container .fc-event {
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  margin: 2px 4px !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+
+/* Aseguramos que el título no se corte feo */
+.calendario-container .fc-event-title {
+  font-weight: 600 !important;
+  font-size: 11.5px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Por si acaso FullCalendar intenta inyectar la hora de todos modos */
+.calendario-container .fc-event-time {
+  display: none !important;
+}
+
+/* ---------------------------------------------------
+   COLORES ESPECÍFICOS (A prueba de balas)
+--------------------------------------------------- */
+
+/* Naranja (Pendiente) */
+.calendario-container .ev-orange {
+  background-color: #fef3c7 !important; /* Tu fondo orange-100 */
+}
+.calendario-container .ev-orange .fc-event-main,
+.calendario-container .ev-orange .fc-event-title {
+  color: #d97706 !important; /* Texto naranja oscuro */
+}
+
+/* Verde (Activo) */
+.calendario-container .ev-green {
+  background-color: #d1fae5 !important; /* Tu fondo green-100 */
+}
+.calendario-container .ev-green .fc-event-main,
+.calendario-container .ev-green .fc-event-title {
+  color: #047857 !important; /* Texto verde oscuro */
+}
+
+/* Azul (En revisión) */
+.calendario-container .ev-blue {
+  background-color: #daeeff !important; /* Tu fondo blue-100 */
+}
+.calendario-container .ev-blue .fc-event-main,
+.calendario-container .ev-blue .fc-event-title {
+  color: #0057a8 !important; /* Texto azul oscuro */
+}
+
+/* Amarillo (Otros) */
+.calendario-container .ev-yellow {
+  background-color: #fffce0 !important; /* Tu fondo yellow-100 */
+}
+.calendario-container .ev-yellow .fc-event-main,
+.calendario-container .ev-yellow .fc-event-title {
+  color: #8a6f00 !important; /* Texto amarillo oscuro */
+}
+
+/* ---------------------------------------------------
+   HOVER Y ARRASTRE
+--------------------------------------------------- */
+.calendario-container .fc-event:hover {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.calendario-container .fc-event:active {
+  cursor: grabbing !important;
+  transform: scale(0.98);
+}
+
+/* Ocultar lineas finas en vista semanal */
+.calendario-container tr.fc-timegrid-slot-minor td,
+.calendario-container tr.fc-timegrid-slot-minor th {
+  border-top: none !important;
+  border-bottom: none !important;
+}
