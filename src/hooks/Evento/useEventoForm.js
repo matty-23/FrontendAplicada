@@ -10,7 +10,7 @@ export function useEventoForm(id) {
   const [evento, setEvento] = useState({
     titulo: "", categoria: "Academico", color: null, estado: "Pendiente",
   });
-  
+
   const [esRecurrente, setEsRecurrente] = useState(false);
   const [recurrenciaRRule, setRecurrenciaRRule] = useState("unico");
 
@@ -27,19 +27,19 @@ export function useEventoForm(id) {
     actualizarOcurrencia: actualizarOcurrenciaBase,
     actualizarCampoOcurrencia,
     eliminarOcurrencia: eliminarOcurrenciaBase, separarOcurrencia
-  } = useOcurrencias([{ 
-    fechaInicio: "", fechaFinalizacion: "", lugar: "", cantidadPersonas: 0, 
-    id_encargado: null, participantes: [], tipo: "NORMAL", isModificada: false 
+  } = useOcurrencias([{
+    fechaInicio: "", fechaFinalizacion: "", lugar: "", cantidadPersonas: 0,
+    id_encargado: null, participantes: [], tipo: "NORMAL", isModificada: false
   }]);
 
   const { actualizarTipo, actualizarFrecuencia, toggleDiaSemana, actualizarConfiguracion, limpiar: limpiarRecurrencia, validarRecurrencia, generarFechasDesdeRecurrencia } = useRecurrencia();
 
-const handleToggleRecurrencia = (activo) => {
+  const handleToggleRecurrencia = (activo) => {
     setEsRecurrente(activo);
     if (activo) {
       // Si el evento no era recurrente y lo activan, forzamos un valor base para que la interfaz despierte
       if (recurrenciaRRule === "unico" || !recurrenciaRRule) {
-          setRecurrenciaRRule("FREQ=DAILY");
+        setRecurrenciaRRule("FREQ=DAILY");
       }
     } else {
       // Al apagarlo, volvemos a único
@@ -74,11 +74,11 @@ const handleToggleRecurrencia = (activo) => {
     if (Array.isArray(eventoSeleccionado.ocurrencias)) {
       const ocurrenciasFormateadas = eventoSeleccionado.ocurrencias.map((oc) => {
         const formatParaInputFecha = (fechaRaw) => {
-            if (!fechaRaw) return "";
-            const d = new Date(fechaRaw);
-            if (isNaN(d.getTime())) return "";
-            const tzOffset = d.getTimezoneOffset() * 60000;
-            return new Date(d - tzOffset).toISOString().slice(0, 16);
+          if (!fechaRaw) return "";
+          const d = new Date(fechaRaw);
+          if (isNaN(d.getTime())) return "";
+          const tzOffset = d.getTimezoneOffset() * 60000;
+          return new Date(d - tzOffset).toISOString().slice(0, 16);
         };
         const fInicio = formatParaInputFecha(oc.fechaInicio || oc.fecha_inicio);
         const fFin = formatParaInputFecha(oc.fechaFinalizacion || oc.fecha_finalizacion);
@@ -117,12 +117,8 @@ const handleToggleRecurrencia = (activo) => {
     }
   };
 
-  const actualizarOcurrencia = (idLocal, cambios) => {
-    if (esRecurrente && isEditing) {
-      setPromptModificacion({ activo: true, ocurrenciaTarget: idLocal, accion: "EDITAR", datosCambio: cambios });
-    } else {
-      actualizarOcurrenciaBase(idLocal, cambios);
-    }
+const actualizarOcurrencia = (idLocal, cambios) => {
+    actualizarOcurrenciaBase(idLocal, { ...cambios, isModificada: true });
   };
 
   const aplicarDecisionRecurrencia = (decision) => {
@@ -147,54 +143,48 @@ const handleToggleRecurrencia = (activo) => {
   // ==========================================
   // GUARDAR EVENTO 
   // ==========================================
-const guardarEvento = async () => {
+  const guardarEvento = async (decisionGlobal = "TODOS") => {
     if (!evento.titulo || !evento.titulo.trim()) throw new Error("El título es obligatorio");
     if (ocurrencias.length === 0) throw new Error("Debe haber al menos una ocurrencia");
     if (isEditing && evento.estado === "Terminado") throw new Error("No se pueden editar eventos terminados");
 
     const ocurrenciasFormateadas = ocurrencias.map((oc) => {
-      // 1. Extraemos variables locales y el estado efímero del frontend
-      const { 
-        idLocal, 
-        personalizado, 
-        participantesSeleccionados, 
-        isModificada, // Lo extraemos para mapearlo a 'fueActualizado'
-        ...restoOc 
-      } = oc;
-
+      const { idLocal, personalizado, participantesSeleccionados, isModificada, ...restoOc } = oc;
       if (!isEditing) {
         delete restoOc.id;
         delete restoOc.id_ocurrencia;
       }
 
-      // 2. Mapeamos los tipos del Frontend a los que entiende el EventoService.ts
       let tipoBackend = restoOc.tipo;
+
+      // Aplicamos la decisión elegida al momento de guardar
+      if (isModificada) {
+         if (decisionGlobal === "SOLO_ESTE") tipoBackend = "MODIFICADA";
+         if (decisionGlobal === "TODOS") tipoBackend = "NORMAL";
+      }
+
       if (tipoBackend === "NORMAL") tipoBackend = "unico";
       if (tipoBackend === "MODIFICADA") tipoBackend = "modificada";
 
       return {
         ...restoOc,
-        // El DTO espera camelCase para fechas y cantidad
         fechaInicio: restoOc.fechaInicio ? new Date(restoOc.fechaInicio).toISOString() : null,
         fechaFinalizacion: restoOc.fechaFinalizacion ? new Date(restoOc.fechaFinalizacion).toISOString() : null,
         cantidadPersonas: restoOc.cantidadPersonas ?? 0,
-        
-        // El DTO espera snake_case SOLO para el encargado
         id_encargado: restoOc.id_encargado === "" ? null : restoOc.id_encargado,
-        
         tipo: tipoBackend,
-        
-        // CAMPO EFÍMERO: Solo viaja en el update y no se guarda en Prisma
-        fueActualizado: isModificada || false
+        fueActualizado: isModificada || false,
+        ocurrencia_original: restoOc.ocurrencia_original || restoOc.instanciaOriginal // <-- AQUÍ
       };
     });
 
-   const payload = {
+    const payload = {
+      id,
       ...evento,
       ocurrencias: ocurrenciasFormateadas,
       // PREFIJO OBLIGATORIO PARA GOOGLE CALENDAR
-      recurrencia: esRecurrente 
-        ? (recurrenciaRRule.startsWith("RRULE:") ? recurrenciaRRule : `RRULE:${recurrenciaRRule}`) 
+      recurrencia: esRecurrente
+        ? (recurrenciaRRule.startsWith("RRULE:") ? recurrenciaRRule : `RRULE:${recurrenciaRRule}`)
         : "unico",
     };
 
@@ -203,7 +193,7 @@ const guardarEvento = async () => {
     } else {
       await crearEvento(payload);
     }
-    
+
     return true;
   };
 

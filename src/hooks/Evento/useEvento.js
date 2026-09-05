@@ -7,21 +7,6 @@ export const useEvento = () => {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState(null);
 
-
-    useEffect(() => {
-        const cargar = async () => {
-            setCargando(true);
-            try {
-                const data = await eventoService.getEventos();
-                setEventos(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setCargando(false);
-            }
-        };
-        cargar();
-    }, []);
     const actualizarOcurrencia = async (idEvento, idOcurrencia, dto) => {
         setError(null);
 
@@ -32,27 +17,6 @@ export const useEvento = () => {
                 dto
             );
 
-            // Actualizamos la ocurrencia dentro del evento local
-            setEventos(prev =>
-                prev.map(evento => {
-                    if (evento.id !== idEvento) {
-                        return evento;
-                    }
-
-                    return {
-                        ...evento,
-                        ocurrencias: (evento.ocurrencias || []).map(ocurrencia =>
-                            ocurrencia.id === idOcurrencia
-                                ? {
-                                    ...ocurrencia,
-                                    ...dto,
-                                }
-                                : ocurrencia
-                        ),
-                    };
-                })
-            );
-
             return actualizado;
 
         } catch (err) {
@@ -60,15 +24,24 @@ export const useEvento = () => {
             throw err;
         }
     };
-    const cargarEventoById = async (id) => {
-        setCargando(true);
+const cargarEventoById = async (id) => {
         setError(null);
+        
+        // MAGIA DE RENDIMIENTO: 
+        // 1. Buscamos si ya tenemos este evento guardado en la lista general
+        const eventoEnMemoria = eventos.find(e => e.id === id);
+        if (eventoEnMemoria) {
+            // Si está, lo cargamos al instante sin molestar al servidor
+            setEventoSeleccionado(eventoEnMemoria);
+            setCargando(false);
+            return eventoEnMemoria;
+        }
 
+        // 2. Si por alguna razón no está, recién ahí hacemos el fetch lento
+        setCargando(true);
         try {
             const data = await eventoService.getEventoById(id);
-
             setEventoSeleccionado(data);
-
             return data;
         } catch (err) {
             setError(err.message);
@@ -77,7 +50,6 @@ export const useEvento = () => {
             setCargando(false);
         }
     };
-
     const cargarEventos = async () => {
         setCargando(true);
         try {

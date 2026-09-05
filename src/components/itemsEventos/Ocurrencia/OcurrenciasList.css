@@ -1,7 +1,84 @@
 .ocurrencias-list {
   width: 100%;
 }
+.ocurrencia-card-allday {
+  margin-bottom: 8px;
+}
 
+.ocurrencia-allday-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.ocurrencia-allday-label input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ocurrencia-allday-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.ocurrencia-allday-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.ocurrencia-allday-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-300);
+  border-radius: 999px;
+  transition: 0.2s ease;
+}
+
+.ocurrencia-allday-slider::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: 0.2s ease;
+}
+
+.ocurrencia-allday-label input:checked + .ocurrencia-allday-slider {
+  background: var(--blue-500);
+}
+
+.ocurrencia-allday-label input:checked + .ocurrencia-allday-slider::before {
+  transform: translateX(16px);
+}
+
+.ocurrencia-allday-label input:disabled + .ocurrencia-allday-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ocurrencia-allday-label:has(input:disabled) {
+  cursor: default;
+}
 .ocurrencias-list-header {
   display: flex;
   align-items: center;

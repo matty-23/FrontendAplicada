@@ -12,8 +12,15 @@ export const adaptarEventoAUI = (ev) => {
     tipo = "blue";
   }
 
-  const ocurrencias = ev.ocurrencias || [];
-  const primeraOc = ocurrencias.length > 0 ? ocurrencias[0] : null;
+ const ocurrencias = ev.ocurrencias || [];
+  
+  // Buscar la verdadera base ignorando mayúsculas/minúsculas
+  const base = ocurrencias.find(o => {
+    const t = (o.tipo || "").toLowerCase();
+    return t === "normal" || t === "unico";
+  }) || ocurrencias[0];
+
+  const primeraOc = ocurrencias.length > 0 ? base : null;
 
   let fecha = "Sin fecha";
   let fechaRaw = null;

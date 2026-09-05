@@ -16,7 +16,7 @@ export function useCalendarioDragDrop({ actualizarOcurrencia, onSuccess }) {
   const aplicarCambio = async (info, decision) => {
     const eventoFC = info.event;
     const { idEvento, idOcurrencia, isRecurrente, instanciaOriginal } = eventoFC.extendedProps;
-    
+
     if (!idEvento || !idOcurrencia) {
       info.revert();
       return;
@@ -32,11 +32,12 @@ export function useCalendarioDragDrop({ actualizarOcurrencia, onSuccess }) {
       if (isRecurrente) {
         datosCambio.tipo = decision === "SOLO_ESTE" ? "MODIFICADA" : "NORMAL";
         datosCambio.isModificada = true;
-        // Referencia cruzada sugerida para el backend
-        if (decision === "SOLO_ESTE") datosCambio.fechaInstanciaOriginal = instanciaOriginal;
+        if (decision === "SOLO_ESTE") {
+          datosCambio.ocurrencia_original = instanciaOriginal; // <-- AQUÍ
+        }
       }
-
       await actualizarOcurrencia(idEvento, idOcurrencia, datosCambio);
+
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error al actualizar la ocurrencia:", error);
@@ -58,7 +59,7 @@ export function useCalendarioDragDrop({ actualizarOcurrencia, onSuccess }) {
 
   const handleEventModification = useCallback((info) => {
     const isRecurrente = info.event.extendedProps?.isRecurrente;
-    
+
     if (isRecurrente) {
       // Si es recurrente, detenemos la acción y abrimos el Prompt
       setPromptDragDrop({ activo: true, info });

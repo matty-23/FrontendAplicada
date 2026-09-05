@@ -1,34 +1,44 @@
 /* CrearEventoModal.css */
 
+/* =========================
+   OVERLAY INVISIBLE Y NO BLOQUEANTE
+========================= */
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.48);
-  backdrop-filter: blur(3px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 24px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1000;
+  /* ¡LA CLAVE! Esto permite que los clics traspasen el fondo y lleguen al calendario */
+  pointer-events: none; 
+  display: flex;
+  justify-content: flex-end; /* Lo tira hacia la derecha */
+  padding: 16px;
 }
 
+/* =========================
+   PANEL LATERAL (ESTILO NOTION)
+========================= */
 .modal-content {
-  width: min(720px, 100%);
-  max-height: min(88vh, 760px);
-
+  /* Reactiva los clics solo dentro del panel */
+  pointer-events: auto; 
+  width: 440px; /* Más angosto para no tapar tanto calendario */
+  height: 100%;
+  max-height: 100%;
   background: #fff;
   border-radius: 16px;
-
-  box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.18),
-    0 4px 12px rgba(15, 23, 42, 0.08);
-
+  /* Sombra elegante hacia la izquierda para dar sensación de elevación */
+  box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.05);
   display: flex;
   flex-direction: column;
-
   overflow: hidden;
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 /* =========================
@@ -243,4 +253,33 @@
 .modal-body textarea {
   width: 100%;
   box-sizing: border-box;
+}
+/* =======================================================
+   SELECTOR DE COLORES
+   ========================================================== */
+.selector-color {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.selector-color-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+}
+
+.selector-color-option:hover {
+  transform: scale(1.1);
+}
+
+.selector-color-option.selected {
+  transform: scale(1.15);
+  border-color: #1e293b; /* Un borde oscuro para marcar el seleccionado */
+  box-shadow: 0 0 0 2px white inset, 0 0 8px rgba(0,0,0,0.2);
 }

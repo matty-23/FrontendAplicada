@@ -6,9 +6,12 @@ const generarIdLocal = () => crypto.randomUUID();
 function crearOcurrenciaBase(datos = {}) {
   const hoy = new Date().toISOString().split("T")[0]; // <-- Añadido
   return {
+    id: datos.id,
+    id_ocurrencia: datos.id_ocurrencia,
+    tipo: datos.tipo || "NORMAL",
     idLocal: datos.idLocal || generarIdLocal(),
-    fechaInicio: datos.fechaInicio || hoy, // <-- Añadido fallback a hoy
-    fechaFinalizacion: datos.fechaFinalizacion || datos.fechaInicio || hoy, // <-- Añadido fallback a hoy
+    fechaInicio: datos.fechaInicio || hoy, 
+    fechaFinalizacion: datos.fechaFinalizacion || datos.fechaInicio || hoy,
     allDay: datos.allDay ?? true,
     lugar: datos.lugar || "",
     cantidadPersonas: datos.cantidadPersonas ?? 0,
@@ -17,6 +20,8 @@ function crearOcurrenciaBase(datos = {}) {
     participantesSeleccionados: datos.participantesSeleccionados || [],
     comentarios: datos.comentarios || [],
     personalizado: datos.personalizado || {},
+    ocurrencia_original: datos.ocurrencia_original || null, // <-- AQUÍ
+    instanciaOriginal: datos.instanciaOriginal || null, // <-- AQUÍ
   };
 }
 

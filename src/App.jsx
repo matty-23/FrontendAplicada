@@ -22,8 +22,6 @@ function App() {
           {/* Login */}
           <Route path="/" element={<Login/>} />
           <Route path="/email" element={<EmailPage/>} />
-
-          {/* Versión 2 (Nueva versión moderna por defecto) */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/eventos" element={<EventosPage/>} />
           <Route path="/admin/eventos/crear" element={<CrearEventoPage />} />

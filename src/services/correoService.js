@@ -29,7 +29,7 @@ export class CorreoService {
         }
     }
 
-    async confirmacionCreacionCuenta(destinatarios, asunto, mensaje) {
+    async confirmacionEvento(destinatarios, asunto, mensaje, archivosAdjuntos = null) {
         const url = `${getApiUrl()}/api/correo/cuenta/confirmacion`;
         try {
             const response = await fetch(url, {

@@ -114,21 +114,13 @@ export default function Calendario({ events = [], onEventoModificado }) {
         return;
       }
 
-      // --------------------------------------
-      // IMPORTANTE
-      // --------------------------------------
-      // No cargamos el evento acá.
-      //
-      // useEventoForm se encargará de
-      // llamar a cargarEventoById cuando
-      // reciba el idEvento.
-      // --------------------------------------
-
       abrirModal({
         modo: "ver",
-
         evento: {
           idEvento,
+          idOcurrencia, // ¡Clave para que el modal sepa qué día tocaste!
+          isRecurrente: evento.extendedProps?.isRecurrente,
+          instanciaOriginal: evento.extendedProps?.instanciaOriginal
         },
       });
 
@@ -208,9 +200,11 @@ export default function Calendario({ events = [], onEventoModificado }) {
             timeGridPlugin,
             interactionPlugin,
           ]}
+          nowIndicator={true}
           eventStartEditable={true}
           eventDurationEditable={true}
-          displayEventTime={false}
+          displayEventTime={true} 
+          displayEventEnd={true}
           initialView={vistaActual}
           headerToolbar={false}
           events={events}
@@ -231,11 +225,10 @@ export default function Calendario({ events = [], onEventoModificado }) {
           forceEventDuration={true}
           defaultTimedEventDuration="01:00:00"
 
-          slotDuration="00:15:00"
+          slotDuration="00:30:00" 
           slotLabelInterval="01:00"
           snapDuration="00:15:00"
           eventDisplay="block"
-          displayEventEnd={false}
           eventTimeFormat={{
             hour: "2-digit",
             minute: "2-digit",
@@ -248,16 +241,16 @@ export default function Calendario({ events = [], onEventoModificado }) {
 
       {/* MODAL */}
 
-      <CrearEventoModal
-
-        isOpen={modalAbierto}
-        onClose={cerrarModal}
-        rangoSeleccionado={rangoSeleccionado}
-        eventoSeleccionado={eventoSeleccionado}
-        modo={modoModal}
-        onSuccess={onEventoModificado}
-
-      />
+      {modalAbierto && (
+        <CrearEventoModal
+          isOpen={modalAbierto}
+          onClose={cerrarModal}
+          rangoSeleccionado={rangoSeleccionado}
+          eventoSeleccionado={eventoSeleccionado}
+          modo={modoModal}
+          onSuccess={onEventoModificado}
+        />
+      )}
 
     </div>
   );

@@ -3,13 +3,20 @@ import RecurrenciaForm from "../Recurrencia/RecurrenciaForm";
 import "./OcurrenciasList.css";
 
 export default function OcurrenciasList({ ocurrencias, onChange, onEliminar, onAgregar, onSeparar, soloLectura = false,
-  isEditing, esRecurrente, recurrenciaRRule, onToggleRecurrencia, onChangeRRule, }) {
+  isEditing, esRecurrente, recurrenciaRRule, onToggleRecurrencia, onChangeRRule,targetOcurrenciaId }) {
 
-  let ocurrenciasAMostrar = esRecurrente
-    ? ocurrencias.filter(o => o.tipo !== "EXCEPCION" && o.tipo !== "MODIFICADA")
+let ocurrenciasAMostrar = esRecurrente
+    ? ocurrencias.filter(o => {
+        const t = (o.tipo || "").toLowerCase();
+        return t !== "excepcion" && t !== "modificada";
+      })
     : [...ocurrencias].sort((a, b) => new Date(a.fechaInicio || 0) - new Date(b.fechaInicio || 0));
-  if (esRecurrente && ocurrenciasAMostrar.length === 0 && ocurrencias.length > 0) {
-    ocurrenciasAMostrar = [ocurrencias[0]];
+
+if (esRecurrente && ocurrencias.length > 0) {
+    const target = ocurrencias.find(o => o.id === targetOcurrenciaId || o.idLocal === targetOcurrenciaId) || ocurrencias[0];
+    ocurrenciasAMostrar = [target];
+  } else if (!esRecurrente) {
+    ocurrenciasAMostrar = [...ocurrencias].sort((a, b) => new Date(a.fechaInicio || 0) - new Date(b.fechaInicio || 0));
   }
 
   const isYearly = recurrenciaRRule?.includes("FREQ=YEARLY");

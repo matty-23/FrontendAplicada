@@ -6,7 +6,7 @@ export default function OcurrenciaCardFields({
   onDateChange, onTimeChange, onAllDayChange, onChange,
   esRecurrente, isYearly
 }) {
-  
+
   // Mostramos la fecha solo si NO es recurrente, o si es recurrencia ANUAL.
   const showDate = !esRecurrente || isYearly;
 
@@ -14,16 +14,22 @@ export default function OcurrenciaCardFields({
     <div className="ocurrencia-card-fields">
       {/* CHECKBOX TODO EL DÍA */}
       <div className="ocurrencia-card-field ocurrencia-card-field-full ocurrencia-card-allday">
-        <input
-          type="checkbox"
-          id={`allDay-${ocurrencia.idLocal}`}
-          checked={ocurrencia.allDay || false}
-          disabled={soloLectura}
-          onChange={onAllDayChange}
-          className="ocurrencia-allday-checkbox"
-        />
-        <label htmlFor={`allDay-${ocurrencia.idLocal}`} className="ocurrencia-allday-label">
-          Todo el día
+        <label
+          htmlFor={`allDay-${ocurrencia.idLocal}`}
+          className="ocurrencia-allday-label"
+        >
+          <span>Todo el día</span>
+
+          <span className="ocurrencia-allday-switch">
+            <input
+              type="checkbox"
+              id={`allDay-${ocurrencia.idLocal}`}
+              checked={ocurrencia.allDay || false}
+              disabled={soloLectura}
+              onChange={onAllDayChange}
+            />
+            <span className="ocurrencia-allday-slider"></span>
+          </span>
         </label>
       </div>
 

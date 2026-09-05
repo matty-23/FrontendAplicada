@@ -1,7 +1,10 @@
 
-export default function EventoGeneralForm({ evento,onChange,}) {
+import SelectorColor from "../itemsCalendario/SelectorColor"; // <-- 1. IMPORTAR EL COMPONENTE
 
-  const handleChange = (campo, valor) => {onChange(campo, valor);};
+export default function EventoGeneralForm({ evento, onChange, disabled }) {
+  const handleChange = (campo, valor) => {
+    onChange(campo, valor);
+  };
 
   return (
     <div className="crear-evento-detalles">
@@ -77,7 +80,13 @@ export default function EventoGeneralForm({ evento,onChange,}) {
           </option>
         </select>
       </div>
-
+      <div className="crear-evento-field">
+        <label>Color del evento</label>
+        <SelectorColor
+          value={evento.color || "#3B82F6"} // Si no tiene color, asigna azul por defecto
+          onChange={(color) => handleChange("color", color)}
+        />
+      </div>
     </div>
   );
 }
